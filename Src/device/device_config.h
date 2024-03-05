@@ -1,16 +1,14 @@
 /**
- * @file main.h
- * @brief main header file -- only used as entry point for error handler
+ * @file <filename>
+ * @brief <description>
  */
 
-#ifndef MAIN_H_
-#define MAIN_H_
+#ifndef DEVICE_CONFIG_H_
+#define DEVICE_CONFIG_H_
 
 /******************************************************************************/
 /*                              I N C L U D E S                               */
 /******************************************************************************/
-#include <stdint.h>
-#include "stm32h5xx_hal.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -35,6 +33,13 @@
 /*                             F U N C T I O N S                              */
 /******************************************************************************/
 
-void Error_Handler(void);
+/**
+ * @brief Device initialization function
+ *
+ * configures and calls all init functions before entering main loop
+ *
+ */
+void device_config_init(void);
 
-#endif // MAIN_H_
+
+#endif // DEVICE_CONFIG_H_
