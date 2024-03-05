@@ -1,3 +1,10 @@
+# IDE and env variables 
+.vscode/
+.DS_Store
+
+# Build Output
+build/
+
 # Prerequisites
 *.d
 
