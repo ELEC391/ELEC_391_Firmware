@@ -1,6 +1,3 @@
-[submodule "Drivers/CMSIS/Device/ST/STM32H5xx"]
-	path = Drivers/CMSIS/Device/ST/STM32H5xx
-	url = https://github.com/STMicroelectronics/cmsis_device_h5.git
-[submodule "Drivers/STM32H5xx_HAL_Driver"]
-	path = Drivers/STM32H5xx_HAL_Driver
-	url = https://github.com/STMicroelectronics/stm32h5xx_hal_driver.git
+[submodule "STM32CubeH5"]
+	path = STM32CubeH5
+	url = https://github.com/STMicroelectronics/STM32CubeH5.git

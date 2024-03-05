@@ -11,7 +11,7 @@
 ######################################
 # target
 ######################################
-TARGET = Blank_DevBoard_Project
+TARGET = LPR_Firmware
 
 
 ######################################
@@ -36,24 +36,24 @@ BUILD_DIR = ../build
 C_SOURCES =  \
 ../Src/main.c \
 ../Src/device/hal_Config/system_stm32h5xx.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_cortex.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc_ex.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash_ex.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_gpio.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma_ex.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr_ex.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_exti.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_icache.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pcd.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pcd_ex.c \
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_ll_usb.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_cortex.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc_ex.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash_ex.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_gpio.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma_ex.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr_ex.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_exti.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_icache.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pcd.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pcd_ex.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_ll_usb.c \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -115,10 +115,10 @@ AS_INCLUDES =
 C_INCLUDES =  \
 -I../src/device/ \
 -I../src/device/hal_Config \
--I../Drivers/STM32H5xx_HAL_Driver/Inc \
--I../Drivers/STM32H5xx_HAL_Driver/Inc/Legacy \
--I../Drivers/CMSIS/Device/ST/STM32H5xx/Include \
--I../Drivers/CMSIS/Include
+-I../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Inc \
+-I../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Inc/Legacy \
+-I../STM32CubeH5/Drivers/CMSIS/Device/ST/STM32H5xx/Include \
+-I../STM32CubeH5/Drivers/CMSIS/Include
 
 
 # compile gcc flags
