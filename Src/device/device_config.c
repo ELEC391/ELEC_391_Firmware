@@ -9,6 +9,7 @@
 
 #include "main.h"
 #include "device_config.h"
+#include "device_gpio.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -51,6 +52,7 @@ void device_config_init(void)
     verify_icache_init();
 
     // Peripheral configurations
+    device_gpio_init();
 
     // App configurations
 

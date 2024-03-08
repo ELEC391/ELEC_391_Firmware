@@ -1,65 +1,65 @@
 /**
- * @file main.c
- * @brief Application main file
+ * @file device_gpio.h
+ * @brief GPIO device configuration
  */
+
+#ifndef DEVICE_GPIO_H_
+#define DEVICE_GPIO_H_
 
 /******************************************************************************/
 /*                              I N C L U D E S                               */
 /******************************************************************************/
 
-#include "main.h"
-#include "device/device_gpio.h"
-#include "device_config.h"
 #include "device_gpio.h"
-
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-// Defines that are only used in this file
+// Public defines that may be used by other files
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
 
-// Typedefs that are only used in this file
-
-/******************************************************************************/
-/*            P R I V A T E  F U N C T I O N  P R O T O T Y P E S             */
-/******************************************************************************/
-
-// Prototypes for functions only used in this file (always declare static)
-
-/******************************************************************************/
-/*                       P U B L I C  F U N C T I O N S                       */
-/******************************************************************************/
-
-void Error_Handler(void)
+typedef enum device_gpio_pin
 {
-    while(1)
-    {
-        // TODO
-    }
-}
+    BOARD_LED_PIN = 1,
+    DEBUG_PIN_D7,
+    DEBUG_PIN_D8,
+    BLUE_BUTTON_PIN,
+    NUM_GPIO_PINS
+}device_gpio_pin;
 
 /******************************************************************************/
-/*                      P R I V A T E  F U N C T I O N S                      */
+/*                       G L O B A L  V A R I A B L E S                       */
 /******************************************************************************/
+
+/******************************************************************************/
+/*                             F U N C T I O N S                              */
+/******************************************************************************/
+
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
-int main(void)
-{
-    // Configure hardware
-    device_config_init();
+ * @brief Device initialization function
+ *
+ * configures and calls all init functions before entering main loop
+ *
+ */
+void device_gpio_init(void);
 
-    // Main loop
-    while (1)
-    {
-        device_gpio_toggle(BOARD_LED_PIN);
-        HAL_Delay(100);
-        //__asm__("nop");
-    }
-}
+
+/**
+ * @brief Toggle Specified GPIO Pin
+ *
+ * Toggles Specfied GPIO PIN
+ *
+ */
+void device_gpio_toggle(device_gpio_pin pin_num);
+
+/******************************************************************************/
+/*                       I N L I N E  F U N C T I O N S                       */
+/******************************************************************************/
+
+// Inline function declarations and implementions
+
+#endif // DEVICE_GPIO_H_
