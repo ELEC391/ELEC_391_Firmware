@@ -1,16 +1,17 @@
 /**
- * @file device_config.h
- * @brief Device Configuration Functions
+ * @file <filename>
+ * @brief <description>
  */
 
-#ifndef DEVICE_CONFIG_H_
-#define DEVICE_CONFIG_H_
+#ifndef FILE_NAME_H_
+#define FILE_NAME_H_
 
 /******************************************************************************/
 /*                              I N C L U D E S                               */
 /******************************************************************************/
 
-#include "device_config.h"
+// Minimum required set of includes ordered from local to global and grouped
+// by category
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -35,13 +36,12 @@
 /*                             F U N C T I O N S                              */
 /******************************************************************************/
 
-/**
- * @brief Device initialization function
- *
- * configures and calls all init functions before entering main loop
- *
- */
-void device_config_init(void);
+// Prototypes for public functions that may be used by other files
 
+/******************************************************************************/
+/*                       I N L I N E  F U N C T I O N S                       */
+/******************************************************************************/
 
-#endif // DEVICE_CONFIG_H_
+// Inline function declarations and implementions
+
+#endif // FILE_NAME_H_
