@@ -19,13 +19,12 @@
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
-
-typedef struct device_gpio_config
+typedef struct GpioConfig
 {
-    GPIO_TypeDef* gpio_port;
-    GPIO_InitTypeDef gpio_init_config;
+    GPIO_TypeDef* gpioPort;
+    GPIO_InitTypeDef gpioInitConfig;
 
-}device_gpio_config;
+}GpioConfig;
 
 /******************************************************************************/
 /*            P R I V A T E  F U N C T I O N  P R O T O T Y P E S             */
@@ -37,12 +36,12 @@ typedef struct device_gpio_config
 /*               P R I V A T E  G L O B A L  V A R I A B L E S                */
 /******************************************************************************/
 
-static device_gpio_config gpio_config[NUM_GPIO_PINS] =
+static GpioConfig gpioConfig[NUM_GPIO_PINS] =
 {
     [BOARD_LED_PIN] =
     {
-        .gpio_port = GPIOA,
-        .gpio_init_config =
+        .gpioPort = GPIOA,
+        .gpioInitConfig =
         {
             .Pin = GPIO_PIN_5,
             .Mode = GPIO_MODE_OUTPUT_PP,
@@ -52,8 +51,8 @@ static device_gpio_config gpio_config[NUM_GPIO_PINS] =
     },
     [DEBUG_PIN_D7] =
     {
-        .gpio_port = GPIOC,
-        .gpio_init_config =
+        .gpioPort = GPIOC,
+        .gpioInitConfig =
         {
             .Pin = GPIO_PIN_7,
             .Mode = GPIO_MODE_OUTPUT_PP,
@@ -63,8 +62,8 @@ static device_gpio_config gpio_config[NUM_GPIO_PINS] =
     },
     [DEBUG_PIN_D8] =
     {
-        .gpio_port = GPIOC,
-        .gpio_init_config =
+        .gpioPort = GPIOC,
+        .gpioInitConfig =
         {
             .Pin = GPIO_PIN_8,
             .Mode = GPIO_MODE_OUTPUT_PP,
@@ -74,8 +73,8 @@ static device_gpio_config gpio_config[NUM_GPIO_PINS] =
     },
     [BLUE_BUTTON_PIN] =
     {
-        .gpio_port = GPIOC,
-        .gpio_init_config =
+        .gpioPort = GPIOC,
+        .gpioInitConfig =
         {
             .Pin = GPIO_PIN_13,
             .Mode = GPIO_MODE_IT_RISING,
@@ -83,6 +82,7 @@ static device_gpio_config gpio_config[NUM_GPIO_PINS] =
         }
     }
 };
+
 /******************************************************************************/
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
 /******************************************************************************/
@@ -93,17 +93,17 @@ static device_gpio_config gpio_config[NUM_GPIO_PINS] =
 /*                       P U B L I C  F U N C T I O N S                       */
 /******************************************************************************/
 
-void device_gpio_init(void)
+void DeviceGpio_init(void)
 {
-    for(device_gpio_pin i = (device_gpio_pin) 1U; i < NUM_GPIO_PINS; i++)
+    for(DeviceGpio_Pin i = (DeviceGpio_Pin) 1U; i < NUM_GPIO_PINS; i++)
     {
-        HAL_GPIO_Init(gpio_config[i].gpio_port, &gpio_config[i].gpio_init_config);
+        HAL_GPIO_Init(gpioConfig[i].gpioPort, &gpioConfig[i].gpioInitConfig);
     }
 }
 
-void device_gpio_toggle(device_gpio_pin pin_num)
+void DeviceGpio_toggle(DeviceGpio_Pin pin_num)
 {
-    HAL_GPIO_TogglePin(gpio_config[pin_num].gpio_port, gpio_config[pin_num].gpio_init_config.Pin);
+    HAL_GPIO_TogglePin(gpioConfig[pin_num].gpioPort, gpioConfig[pin_num].gpioInitConfig.Pin);
 }
 
 /******************************************************************************/

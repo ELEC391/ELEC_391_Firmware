@@ -53,12 +53,12 @@ void Error_Handler(void)
 int main(void)
 {
     // Configure hardware
-    device_config_init();
+    DeviceConfig_init();
 
     // Main loop
     while (1)
     {
-        device_gpio_toggle(BOARD_LED_PIN);
+        DeviceGpio_toggle(BOARD_LED_PIN);
         HAL_Delay(100);
         //__asm__("nop");
     }

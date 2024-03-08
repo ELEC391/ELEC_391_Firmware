@@ -22,14 +22,14 @@
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
 
-typedef enum device_gpio_pin
+typedef enum DeviceGpio_Pin
 {
     BOARD_LED_PIN = 1,
     DEBUG_PIN_D7,
     DEBUG_PIN_D8,
     BLUE_BUTTON_PIN,
     NUM_GPIO_PINS
-}device_gpio_pin;
+}DeviceGpio_Pin;
 
 /******************************************************************************/
 /*                       G L O B A L  V A R I A B L E S                       */
@@ -45,7 +45,7 @@ typedef enum device_gpio_pin
  * configures and calls all init functions before entering main loop
  *
  */
-void device_gpio_init(void);
+void DeviceGpio_init(void);
 
 
 /**
@@ -54,7 +54,7 @@ void device_gpio_init(void);
  * Toggles Specfied GPIO PIN
  *
  */
-void device_gpio_toggle(device_gpio_pin pin_num);
+void DeviceGpio_toggle(DeviceGpio_Pin pin_num);
 
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */

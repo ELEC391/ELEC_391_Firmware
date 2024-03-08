@@ -44,7 +44,7 @@ static void verify_icache_init(void);
 /*                       P U B L I C  F U N C T I O N S                       */
 /******************************************************************************/
 
-void device_config_init(void)
+void DeviceConfig_init(void)
 {
     // Initial Hardware and clock setup
     HAL_Init();
@@ -52,7 +52,7 @@ void device_config_init(void)
     verify_icache_init();
 
     // Peripheral configurations
-    device_gpio_init();
+    DeviceGpio_init();
 
     // App configurations
 

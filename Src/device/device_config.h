@@ -41,7 +41,7 @@
  * configures and calls all init functions before entering main loop
  *
  */
-void device_config_init(void);
+void DeviceConfig_init(void);
 
 
 #endif // DEVICE_CONFIG_H_
