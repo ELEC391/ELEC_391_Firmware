@@ -17,8 +17,6 @@
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-// Defines that are only used in this file
-
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
@@ -58,8 +56,8 @@ int main(void)
     // Main loop
     while (1)
     {
-        DeviceGpio_toggle(BOARD_LED_PIN);
-        HAL_Delay(100);
-        //__asm__("nop");
+        // HAL_Delay(100);
+        // DeviceGpio_toggle(BOARD_LED_PIN);
+        __asm__("nop");
     }
 }

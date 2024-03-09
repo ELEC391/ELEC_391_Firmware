@@ -34,9 +34,13 @@ BUILD_DIR = ../build
 ######################################
 # C sources
 C_SOURCES =  \
+../Src/device/device_timer.c \
+../Src/device/device_irq.c \
 ../Src/device/device_gpio.c \
 ../Src/device/device_config.c \
 ../Src/device/hal_Config/system_stm32h5xx.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_tim.c \
+../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_tim_ex.c \
 ../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_cortex.c \
 ../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc.c \
 ../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc_ex.c \

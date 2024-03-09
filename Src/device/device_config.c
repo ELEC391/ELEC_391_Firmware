@@ -10,6 +10,7 @@
 #include "main.h"
 #include "device_config.h"
 #include "device_gpio.h"
+#include "device_timer.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -53,6 +54,7 @@ void DeviceConfig_init(void)
 
     // Peripheral configurations
     DeviceGpio_init();
+    DeviceTimer_init(); // Configures main controller ISR
 
     // App configurations
 

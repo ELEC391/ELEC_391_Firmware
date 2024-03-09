@@ -1,23 +1,22 @@
 /**
- * @file main.h
- * @brief main header file -- only used as entry point for error handler
+ * @file device_irq.h
+ * @brief All functions relating to interrupts
  */
 
-#ifndef MAIN_H_
-#define MAIN_H_
+#ifndef DEVICE_IRQ_H_
+#define DEVICE_IRQ_H_
 
 /******************************************************************************/
 /*                              I N C L U D E S                               */
 /******************************************************************************/
-#include <stdint.h>
-#include "stm32h5xx_hal.h"
+
+#include "device_irq.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-#define TRUE 1U
-#define FALSE 0U
+// Public defines that may be used by other files
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -36,6 +35,18 @@
 /*                             F U N C T I O N S                              */
 /******************************************************************************/
 
-void Error_Handler(void);
+// Interrupt Handlers TODO: Find out if they can be re-named
+void TIM2_IRQHandler(void);
 
-#endif // MAIN_H_
+// TODO: Determine if autogen functions are required
+void NMI_Handler(void);
+void HardFault_Handler(void);
+void MemManage_Handler(void);
+void BusFault_Handler(void);
+void UsageFault_Handler(void);
+void SVC_Handler(void);
+void DebugMon_Handler(void);
+void PendSV_Handler(void);
+void SysTick_Handler(void);
+
+#endif // DEVICE_IRQ_H_
