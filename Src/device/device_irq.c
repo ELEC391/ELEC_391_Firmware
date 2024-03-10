@@ -12,6 +12,7 @@
 #include "device_irq.h"
 #include "device_timer.h"
 #include "device_gpio.h"
+#include "app_motor.h"
 
 
 /******************************************************************************/
@@ -67,6 +68,7 @@ void TIM2_IRQHandler(void)
     DeviceGpio_toggle(DEBUG_PIN_D8);
     SampleComputeLoad();
     DeviceGpio_toggle(DEBUG_PIN_D8);
+    AppMotor_updateEncoder();
 }
 
 // TODO Determine if these auto Gen functions are required
@@ -159,7 +161,6 @@ void SysTick_Handler(void)
 
     /* USER CODE END SysTick_IRQn 1 */
 }
-
 
 /******************************************************************************/
 /*                      P R I V A T E  F U N C T I O N S                      */

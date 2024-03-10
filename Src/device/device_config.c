@@ -11,6 +11,7 @@
 #include "device_config.h"
 #include "device_gpio.h"
 #include "device_timer.h"
+#include "app_motor.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -62,7 +63,10 @@ void DeviceConfig_init(void)
 
 
     // App configurations
+    AppMotor_init();
 
+    // Start ISRs
+    DeviceTimer_startIrq(MAIN_CONTROL_TIMER);
 }
 
 /******************************************************************************/

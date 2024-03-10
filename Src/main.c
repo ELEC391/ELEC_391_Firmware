@@ -8,9 +8,11 @@
 /******************************************************************************/
 
 #include "main.h"
+#include "app/app_motor.h"
 #include "device_config.h"
 #include "device_gpio.h"
 #include "device_timer.h"
+#include "app_motor.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -36,7 +38,8 @@ void Error_Handler(void)
 {
     while(1)
     {
-        // TODO
+        
+        HAL_Delay(100);
     }
 }
 
@@ -52,20 +55,24 @@ int main(void)
     // Configure hardware
     DeviceConfig_init();
 
-    uint16_t count = 0;
+    int16_t velocity = 0;
+    int64_t position = 0;
     char aTxMessage[100];
 
     // Main loop
     while (1)
     {
-        count = DeviceTimer_getEncoderCount();
-        sprintf(aTxMessage, "count is  %u \r\n", (unsigned int) count);
+        // count = DeviceTimer_getEncoderCount();
+        velocity = AppMotor_getVelocity();
+        position = AppMotor_getPostion();
+        sprintf(aTxMessage, "Position = %d \r\nVelocity = %d\r\n", (int) position, (int) velocity);
         if(HAL_UART_Transmit(&huart3, (uint8_t*)aTxMessage, strlen(aTxMessage), 1000)!= HAL_OK)
         {
         /* Transfer error in transmission process */
         Error_Handler();
         }
-        HAL_Delay(500);
+        HAL_Delay(100);
+        // AppMotor_updateEncoder();
         __asm__("nop");
     }
 }

@@ -82,22 +82,35 @@ void DeviceTimer_init(void)
         {
             Error_Handler();
         }
-        else if (TimerConfigs[i].configureIrq == TRUE)
+    }
+}
+
+void DeviceTimer_startIrq(DeviceTimer_Num timer)
+{
+    if(timer != NUM_DEVICE_TIMERS)
+    {
+        if (TimerConfigs[timer].configureIrq == TRUE)
         {
-            HAL_TIM_Base_Start_IT(&TimerConfigs[i].timConfig);
+            HAL_TIM_Base_Start_IT(&TimerConfigs[timer].timConfig);
         }
     }
+}
 
+void DeviceTimer_startEncoder(void)
+{
     // Encoder timer init
     MX_TIM1_Init();
     // Start encoder
     HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
-
 }
 
 void DeviceTimer_handleIrq(DeviceTimer_Num timer)
 {
-    HAL_TIM_IRQHandler(&TimerConfigs[timer].timConfig);
+    if(timer != NUM_DEVICE_TIMERS)
+    {
+        HAL_TIM_IRQHandler(&TimerConfigs[timer].timConfig);
+
+    }
 }
 
 uint16_t DeviceTimer_getEncoderCount(void)

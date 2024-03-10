@@ -1,64 +1,52 @@
 /**
- * @file device_time.h
- * @brief Device timer configuration
+ * @file app_motor.h
+ * @brief Motor App
  */
 
-#ifndef DEVICE_TIMER_H_
-#define DEVICE_TIMER_H_
+#ifndef APP_MOTOR_H_
+#define APP_MOTOR_H_
 
 /******************************************************************************/
 /*                              I N C L U D E S                               */
 /******************************************************************************/
 
-// Minimum required set of includes ordered from local to global and grouped
-// by category
+#include "app_motor.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-// Public defines that may be used by other files
+typedef struct{
+	int16_t velocity;
+	int64_t position;
+	uint16_t last_counter_value;
+}App_MotorEncoder;
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
-typedef enum DeviceTimer_Num
-{
-    MAIN_CONTROL_TIMER = 1,
-    NUM_DEVICE_TIMERS
-} DeviceTimer_Num;
+
+// Public typedefs that may be used by other files
 
 /******************************************************************************/
 /*                       G L O B A L  V A R I A B L E S                       */
 /******************************************************************************/
 
+// Public global variables that may be used by other files
+// (always declare extern)
 
 /******************************************************************************/
 /*                             F U N C T I O N S                              */
 /******************************************************************************/
 
-/**
- * @brief Device initialization function
- *
- * configures all timers
- *
- */
-void DeviceTimer_init(void);
-void DeviceTimer_startIrq(DeviceTimer_Num timer);
-void DeviceTimer_startEncoder(void);
-
-/**
- * @brief Will handle timer interrupt if enabled otherwise no-op
- *
- */
-void DeviceTimer_handleIrq(DeviceTimer_Num timer);
-
-uint16_t DeviceTimer_getEncoderCount(void);
-
+void AppMotor_updateEncoder(void);
+int16_t AppMotor_getVelocity(void);
+int64_t AppMotor_getPostion(void);
+void AppMotor_init(void);
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */
 /******************************************************************************/
 
 // Inline function declarations and implementions
 
-#endif // DEVICE_TIMER_H_
+#endif // APP_MOTOR_H_

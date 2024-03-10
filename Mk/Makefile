@@ -34,6 +34,7 @@ BUILD_DIR = ../build
 ######################################
 # C sources
 C_SOURCES =  \
+../Src/app/app_motor.c \
 ../Src/device/device_timer.c \
 ../Src/device/device_irq.c \
 ../Src/device/device_gpio.c \
@@ -119,6 +120,7 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
+-I../src/app/ \
 -I../src/device/ \
 -I../src/device/hal_Config \
 -I../src \
