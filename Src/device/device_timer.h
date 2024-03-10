@@ -22,7 +22,6 @@
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
-
 typedef enum DeviceTimer_Num
 {
     MAIN_CONTROL_TIMER = 1,
@@ -33,8 +32,6 @@ typedef enum DeviceTimer_Num
 /*                       G L O B A L  V A R I A B L E S                       */
 /******************************************************************************/
 
-// Public global variables that may be used by other files
-// (always declare extern)
 
 /******************************************************************************/
 /*                             F U N C T I O N S                              */
@@ -53,6 +50,8 @@ void DeviceTimer_init(void);
  *
  */
 void DeviceTimer_handleIrq(DeviceTimer_Num timer);
+
+uint16_t DeviceTimer_getEncoderCount(void);
 
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */
