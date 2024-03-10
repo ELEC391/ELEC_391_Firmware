@@ -53,7 +53,15 @@ void SampleComputeLoad(void);
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32h5xx.s).                    */
 /******************************************************************************/
+void TIM3_IRQHandler(void)
+{
+    // Handle IRQ
+    DeviceTimer_handleIrq(SIGNAL_FILTER_TIMER);
 
+    // Update signal
+    DeviceGpio_toggle(DEBUG_PIN_D8);
+    AppMotor_updateEncoder();
+}
 
 void TIM2_IRQHandler(void)
 {
@@ -65,10 +73,7 @@ void TIM2_IRQHandler(void)
     DeviceGpio_toggle(BOARD_LED_PIN);
 
     // Control execution timing
-    DeviceGpio_toggle(DEBUG_PIN_D8);
     SampleComputeLoad();
-    DeviceGpio_toggle(DEBUG_PIN_D8);
-    AppMotor_updateEncoder();
 }
 
 // TODO Determine if these auto Gen functions are required

@@ -46,7 +46,7 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
         .timConfig =
         {
             .Instance = TIM2,
-            .Init.Prescaler = 9999, // TODO Add comment on math for timing
+            .Init.Prescaler = 99, // CLK / ((PRE +1)(Period + 1)) = 1/Timer Freq  => 1Khz
             .Init.CounterMode = TIM_COUNTERMODE_UP,
             .Init.Period = 2499,
             .Init.ClockDivision = TIM_CLOCKDIVISION_DIV1,
@@ -61,7 +61,29 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
             .MasterOutputTrigger = TIM_TRGO_RESET,
             .MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE
         }
-    }
+    },
+    [SIGNAL_FILTER_TIMER] =
+    {
+        .configureIrq = TRUE,
+        .timConfig =
+        {
+            .Instance = TIM3,
+            .Init.Prescaler = 9, // CLK / ((PRE +1)(Period + 1)) = 1/Timer Freq  => 10Khz
+            .Init.CounterMode = TIM_COUNTERMODE_UP,
+            .Init.Period = 2499,
+            .Init.ClockDivision = TIM_CLOCKDIVISION_DIV1,
+            .Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE,
+        },
+        .clockConfig =
+        {
+            .ClockSource = TIM_CLOCKSOURCE_INTERNAL,
+        },
+        .masterConfig =
+        {
+            .MasterOutputTrigger = TIM_TRGO_RESET,
+            .MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE
+        }
+    },
 };
 
 /******************************************************************************/
@@ -122,41 +144,34 @@ uint16_t DeviceTimer_getEncoderCount(void)
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 {
 
-  if(tim_baseHandle->Instance==TIM2)
-  {
-  /* USER CODE BEGIN TIM2_MspInit 0 */
-
-  /* USER CODE END TIM2_MspInit 0 */
-    /* TIM2 clock enable */
-    __HAL_RCC_TIM2_CLK_ENABLE();
-
-    /* TIM2 interrupt Init */
-    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(TIM2_IRQn);
-  /* USER CODE BEGIN TIM2_MspInit 1 */
-
-  /* USER CODE END TIM2_MspInit 1 */
-  }
+    if (tim_baseHandle->Instance==TIM2)
+    {
+        __HAL_RCC_TIM2_CLK_ENABLE();
+        HAL_NVIC_SetPriority(TIM2_IRQn, 0, 1); // One sub priority below Signal filter
+        HAL_NVIC_EnableIRQ(TIM2_IRQn);
+    }
+    else if (tim_baseHandle->Instance==TIM3)
+    {
+        __HAL_RCC_TIM3_CLK_ENABLE();
+        HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0); // Highest priority
+        HAL_NVIC_EnableIRQ(TIM3_IRQn);
+    }
 }
 
 // AutoGen Function Required for HAL_TIM_Base_Init call
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 {
 
-  if(tim_baseHandle->Instance==TIM2)
-  {
-  /* USER CODE BEGIN TIM2_MspDeInit 0 */
-
-  /* USER CODE END TIM2_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_TIM2_CLK_DISABLE();
-
-    /* TIM2 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(TIM2_IRQn);
-  /* USER CODE BEGIN TIM2_MspDeInit 1 */
-
-  /* USER CODE END TIM2_MspDeInit 1 */
-  }
+    if (tim_baseHandle->Instance==TIM2)
+    {
+        __HAL_RCC_TIM2_CLK_DISABLE();
+        HAL_NVIC_DisableIRQ(TIM2_IRQn);
+    }
+    else if (tim_baseHandle->Instance==TIM3)
+    {
+        __HAL_RCC_TIM3_CLK_DISABLE();
+        HAL_NVIC_DisableIRQ(TIM3_IRQn);
+    }
 }
 
 /******************************************************************************/

@@ -67,6 +67,8 @@ void DeviceConfig_init(void)
 
     // Start ISRs
     DeviceTimer_startIrq(MAIN_CONTROL_TIMER);
+    DeviceTimer_startIrq(SIGNAL_FILTER_TIMER);
+
 }
 
 /******************************************************************************/

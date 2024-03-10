@@ -37,6 +37,7 @@
 
 // Interrupt Handlers TODO: Find out if they can be re-named
 void TIM2_IRQHandler(void);
+void TIM3_IRQHandler(void);
 
 // TODO: Determine if autogen functions are required
 void NMI_Handler(void);

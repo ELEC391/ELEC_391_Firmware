@@ -25,6 +25,7 @@
 typedef enum DeviceTimer_Num
 {
     MAIN_CONTROL_TIMER = 1,
+    SIGNAL_FILTER_TIMER,
     NUM_DEVICE_TIMERS
 } DeviceTimer_Num;
 
