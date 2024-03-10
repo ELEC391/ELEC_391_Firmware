@@ -8,7 +8,6 @@
 /******************************************************************************/
 
 #include "main.h"
-#include "device/device_gpio.h"
 #include "device_config.h"
 #include "device_gpio.h"
 
@@ -16,7 +15,7 @@
 /******************************************************************************/
 /*                               D E F I N E S                                */
 /******************************************************************************/
-
+extern UART_HandleTypeDef huart3;
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
@@ -53,11 +52,20 @@ int main(void)
     // Configure hardware
     DeviceConfig_init();
 
+    uint32_t count = 0;
+    char aTxMessage[100];
+
     // Main loop
     while (1)
     {
-        // HAL_Delay(100);
-        // DeviceGpio_toggle(BOARD_LED_PIN);
+        count++;
+        sprintf(aTxMessage, "count is  %u \r\n", (unsigned int) count);
+        if(HAL_UART_Transmit(&huart3, (uint8_t*)aTxMessage, strlen(aTxMessage), 1000)!= HAL_OK)
+        {
+        /* Transfer error in transmission process */
+        Error_Handler();
+        }
+        HAL_Delay(1000);
         __asm__("nop");
     }
 }

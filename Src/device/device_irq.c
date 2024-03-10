@@ -8,6 +8,7 @@
 /******************************************************************************/
 
 #include "main.h"
+#include "device_config.h"
 #include "device_irq.h"
 #include "device_timer.h"
 #include "device_gpio.h"
@@ -40,8 +41,6 @@ void SampleComputeLoad(void);
 /******************************************************************************/
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
 /******************************************************************************/
-
-// Global variable definitions matching the extern definitions in the header
 
 /******************************************************************************/
 /*                       P U B L I C  F U N C T I O N S                       */

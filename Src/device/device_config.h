@@ -28,8 +28,8 @@
 /*                       G L O B A L  V A R I A B L E S                       */
 /******************************************************************************/
 
-// Public global variables that may be used by other files
-// (always declare extern)
+extern UART_HandleTypeDef huart3;
+
 
 /******************************************************************************/
 /*                             F U N C T I O N S                              */
