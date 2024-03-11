@@ -40,6 +40,7 @@ C_SOURCES =  \
 ../Src/device/device_gpio.c \
 ../Src/device/device_config.c \
 ../Src/device/hal_Config/system_stm32h5xx.c \
+../Src/lib/lib_lpf.c \
 ../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_tim.c \
 ../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_tim_ex.c \
 ../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_cortex.c \
@@ -123,6 +124,7 @@ C_INCLUDES =  \
 -I../src/app/ \
 -I../src/device/ \
 -I../src/device/hal_Config \
+-I../src/lib/ \
 -I../src \
 -I../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Inc \
 -I../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Inc/Legacy \
