@@ -60,6 +60,6 @@ void DeviceGpio_toggle(DeviceGpio_Pin pin_num);
 /*                       I N L I N E  F U N C T I O N S                       */
 /******************************************************************************/
 
-// Inline function declarations and implementions
+// Inline function declarations and implementations
 
 #endif // DEVICE_GPIO_H_

@@ -60,6 +60,6 @@ uint16_t DeviceTimer_getEncoderCount(void);
 /*                       I N L I N E  F U N C T I O N S                       */
 /******************************************************************************/
 
-// Inline function declarations and implementions
+// Inline function declarations and implementations
 
 #endif // DEVICE_TIMER_H_
