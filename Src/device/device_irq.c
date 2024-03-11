@@ -60,7 +60,7 @@ void TIM3_IRQHandler(void)
 
     // Update signal
     DeviceGpio_toggle(DEBUG_PIN_D8);
-    AppMotor_updateEncoder();
+    AppMotor_10kHz();
 }
 
 void TIM2_IRQHandler(void)

@@ -38,7 +38,7 @@ void Error_Handler(void)
 {
     while(1)
     {
-        
+
         HAL_Delay(100);
     }
 }
@@ -63,8 +63,8 @@ int main(void)
     while (1)
     {
         // count = DeviceTimer_getEncoderCount();
-        velocity = AppMotor_getVelocity();
-        position = AppMotor_getPostion();
+        velocity = AppMotor_getEncoderVelocity();
+        position = AppMotor_getEncoderCount();
         sprintf(aTxMessage, "Position = %d \r\nVelocity = %d\r\n", (int) position, (int) velocity);
         if(HAL_UART_Transmit(&huart3, (uint8_t*)aTxMessage, strlen(aTxMessage), 1000)!= HAL_OK)
         {
@@ -72,7 +72,6 @@ int main(void)
         Error_Handler();
         }
         HAL_Delay(100);
-        // AppMotor_updateEncoder();
         __asm__("nop");
     }
 }

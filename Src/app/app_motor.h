@@ -16,11 +16,6 @@
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-typedef struct{
-	int16_t velocity;
-	int64_t position;
-	uint16_t last_counter_value;
-}App_MotorEncoder;
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -39,10 +34,15 @@ typedef struct{
 /*                             F U N C T I O N S                              */
 /******************************************************************************/
 
-void AppMotor_updateEncoder(void);
-int16_t AppMotor_getVelocity(void);
-int64_t AppMotor_getPostion(void);
+void AppMotor_10kHz(void);
 void AppMotor_init(void);
+float_t AppMotor_getVelocity_Raw(void);
+float_t AppMotor_getPosition_Raw(void);
+float_t AppMotor_getVelocity_10kHz(void);
+float_t AppMotor_getPosition_10kHz(void);
+int16_t AppMotor_getEncoderVelocity(void);
+int64_t AppMotor_getEncoderCount(void);
+
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */
 /******************************************************************************/
