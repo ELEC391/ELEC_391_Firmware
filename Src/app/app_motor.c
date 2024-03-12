@@ -16,8 +16,9 @@
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-#define  PULSE_PER_ROTATION 360 * 34 * 2
-#define DEGREE_PER_PULSE (360.0F / PULSE_PER_ROTATION)
+// TODO figure out weird floating point macro bug when writing as DEGREE_PER_ROTATION / PULSE_PER_ROTATION
+#define DEGREE_PER_COUNT 0.014706F //360 /  CPR * GEARING * 2 Counts per Pulse for encoder mode
+#define DEGREE_PER_ROTATION 360
 
 // Filter Defines
 #define SAMPLE_FREQ_HZ 10000
@@ -79,9 +80,9 @@ void AppMotor_10kHz(void)
 
     // Update raw data
     RawMotorData.positionPrev = RawMotorData.position;
-    RawMotorData.position = Encoder.count * ((float_t) DEGREE_PER_PULSE); // ouput Degree
+    RawMotorData.position = Encoder.count * ((float_t) DEGREE_PER_COUNT); // ouput Degree
     RawMotorData.velocityPrev = RawMotorData.velocity;
-    RawMotorData.velocity = Encoder.deltaCount * ((float_t) (DEGREE_PER_PULSE * SAMPLE_FREQ_HZ)) / ((float_t) SEC_PER_MIN); // output RPM
+    RawMotorData.velocity = Encoder.deltaCount * (DEGREE_PER_COUNT * SAMPLE_FREQ_HZ * SEC_PER_MIN) / (DEGREE_PER_ROTATION); // output RPM
     // Update filtered data
     FilteredMotorData.positionPrev = FilteredMotorData.position;
     FilteredMotorData.position = Lib_lpf(RawMotorData.position, RawMotorData.positionPrev, FilteredMotorData.positionPrev, (float_t) CUTOFF_HZ, (float_t) SAMPLE_FREQ_HZ);

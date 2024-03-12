@@ -69,8 +69,8 @@ void TIM2_IRQHandler(void)
     DeviceTimer_handleIrq(MAIN_CONTROL_TIMER);
 
     // ISR Timing
-    DeviceGpio_toggle(DEBUG_PIN_D7);
-    DeviceGpio_toggle(BOARD_LED_PIN);
+    // DeviceGpio_toggle(DEBUG_PIN_D7);
+    // DeviceGpio_toggle(BOARD_LED_PIN);
 
     // Control execution timing
     SampleComputeLoad();
