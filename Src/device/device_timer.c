@@ -23,9 +23,11 @@ TIM_HandleTypeDef htim1;
 typedef struct TimerConfig
 {
     uint8_t configureIrq;
+    uint8_t configurePwm;
     TIM_HandleTypeDef timConfig;
     TIM_ClockConfigTypeDef clockConfig;
     TIM_MasterConfigTypeDef masterConfig;
+    TIM_OC_InitTypeDef pwmConfig;
 }TimerConfig;
 
 /******************************************************************************/
@@ -43,6 +45,7 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
     [MAIN_CONTROL_TIMER] =
     {
         .configureIrq = TRUE,
+        .configurePwm = FALSE,
         .timConfig =
         {
             .Instance = TIM2,
@@ -60,11 +63,14 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
         {
             .MasterOutputTrigger = TIM_TRGO_RESET,
             .MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE
-        }
+        },
+        .pwmConfig = {} // Init to 0
+
     },
     [SIGNAL_FILTER_TIMER] =
     {
         .configureIrq = TRUE,
+        .configurePwm = TRUE,
         .timConfig =
         {
             .Instance = TIM3,
@@ -82,7 +88,15 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
         {
             .MasterOutputTrigger = TIM_TRGO_RESET,
             .MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE
+        },
+        .pwmConfig =
+        {
+            .OCMode = TIM_OCMODE_PWM1;
+            .Pulse = 0;
+            .OCPolarity = TIM_OCPOLARITY_HIGH;
+            .OCFastMode = TIM_OCFAST_DISABLE;
         }
+
     },
 };
 
@@ -99,6 +113,12 @@ void DeviceTimer_init(void)
         configRet |= HAL_TIM_Base_Init(&TimerConfigs[i].timConfig);
         configRet |= HAL_TIM_ConfigClockSource(&TimerConfigs[i].timConfig, &TimerConfigs[i].clockConfig);
         configRet |= HAL_TIMEx_MasterConfigSynchronization(&TimerConfigs[i].timConfig, &TimerConfigs[i].masterConfig);
+
+        // Check if PWM if configured for timer
+        if(TimerConfigs[i].configurePwm == TRUE)
+        {
+            configRet |= HAL_TIM_PWM_ConfigChannel(&TimerConfigs[i].timConfig, &TimerConfigs[i].pwmConfig, TIM_CHANNEL_1) // TODO -- make output channel configurable
+        }
 
         if (configRet != HAL_OK)
         {
