@@ -61,15 +61,13 @@ static volatile App_MotorData FilteredMotorData = {};
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
 /******************************************************************************/
 
-extern TIM_HandleTypeDef htim1;
-
 /******************************************************************************/
 /*                       P U B L I C  F U N C T I O N S                       */
 /******************************************************************************/
 
 void AppMotor_init(void)
 {
-    DeviceTimer_startEncoder();
+    DeviceTimer_startEncoder(TEST_ENCODER);
     updateEncoderPulseCount();
 }
 
@@ -132,48 +130,46 @@ int64_t AppMotor_getEncoderCount(void)
 
 // From https://www.steppeschool.com/pages/blog/stm32-timer-encoder-mode
 static void updateEncoderPulseCount(void)
- {
-uint16_t temp_counter = __HAL_TIM_GET_COUNTER(&htim1);
-static uint8_t first_time = 0;
-if(!first_time)
 {
-   Encoder.deltaCount = 0;
-   first_time = 1;
-}
-else
-{
-  if(temp_counter == Encoder.last_counter_value)
-  {
-    Encoder.deltaCount = 0;
-  }
-  else if(temp_counter > Encoder.last_counter_value)
-  {
-    if (__HAL_TIM_IS_TIM_COUNTING_DOWN(&htim1))
+    uint16_t temp_counter = DeviceTimer_getEncoderCount(TEST_ENCODER);
+
+    static bool first_time = true;
+    if (first_time)
     {
-      Encoder.deltaCount = -Encoder.last_counter_value -
-	(__HAL_TIM_GET_AUTORELOAD(&htim1)-temp_counter);
+        Encoder.deltaCount = 0;
+        first_time = false;
     }
     else
     {
-      Encoder.deltaCount = temp_counter -
-           Encoder.last_counter_value;
+        if (temp_counter == Encoder.last_counter_value)
+        {
+            Encoder.deltaCount = 0;
+        }
+        else if(temp_counter > Encoder.last_counter_value)
+        {
+            if (DeviceTimer_isEncoderCountingDown(TEST_ENCODER))
+            {
+                Encoder.deltaCount = (- Encoder.last_counter_value - (DeviceTimer_getEncoderAutoReload(TEST_ENCODER) - temp_counter));
+            }
+            else
+            {
+                Encoder.deltaCount = temp_counter - Encoder.last_counter_value;
+            }
+        }
+        else
+        {
+            if (DeviceTimer_isEncoderCountingDown(TEST_ENCODER))
+            {
+                Encoder.deltaCount = temp_counter - Encoder.last_counter_value;
+            }
+            else
+            {
+                Encoder.deltaCount = temp_counter + (DeviceTimer_getEncoderAutoReload(TEST_ENCODER) - Encoder.last_counter_value);
+            }
+        }
     }
-  }
-  else
-  {
-    if (__HAL_TIM_IS_TIM_COUNTING_DOWN(&htim1))
-    {
-	Encoder.deltaCount = temp_counter -
-            Encoder.last_counter_value;
-    }
-    else
-    {
-	Encoder.deltaCount = temp_counter +
-	(__HAL_TIM_GET_AUTORELOAD(&htim1) -
-              Encoder.last_counter_value);
-    }
-   }
-}
-Encoder.count += Encoder.deltaCount;
-Encoder.last_counter_value = temp_counter;
+
+    // Update counts
+    Encoder.count += Encoder.deltaCount;
+    Encoder.last_counter_value = temp_counter;
  }
