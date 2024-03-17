@@ -14,7 +14,7 @@
 /******************************************************************************/
 
 #define DEG_TO_RAD(x) x * M_PI / 180.0F
-#define FREQ_TO_PERIOD(x) 1.0 / x
+#define FREQ_TO_RAD_PER_S(x) 2 * M_PI * x
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -48,7 +48,7 @@
 float_t Lib_lpf(float_t x, float_t xPrev, float_t yPrev, float_t cutoff_Hz, float_t samplingFreq_Hz)
 {
     float_t omega_c = DEG_TO_RAD(cutoff_Hz);
-    float_t T = FREQ_TO_PERIOD(samplingFreq_Hz);
+    float_t T = FREQ_TO_RAD_PER_S(samplingFreq_Hz);
     float_t alpha = (2.0F - T * omega_c) / (2.0F + T * omega_c);
     float_t beta = T * omega_c / (2.0F + T * omega_c);
 

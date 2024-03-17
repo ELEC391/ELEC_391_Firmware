@@ -91,12 +91,11 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
         },
         .pwmConfig =
         {
-            .OCMode = TIM_OCMODE_PWM1;
-            .Pulse = 0;
-            .OCPolarity = TIM_OCPOLARITY_HIGH;
-            .OCFastMode = TIM_OCFAST_DISABLE;
+            .OCMode = TIM_OCMODE_PWM1,
+            .Pulse = 0,
+            .OCPolarity = TIM_OCPOLARITY_HIGH,
+            .OCFastMode = TIM_OCFAST_DISABLE,
         }
-
     },
 };
 
@@ -117,7 +116,7 @@ void DeviceTimer_init(void)
         // Check if PWM if configured for timer
         if(TimerConfigs[i].configurePwm == TRUE)
         {
-            configRet |= HAL_TIM_PWM_ConfigChannel(&TimerConfigs[i].timConfig, &TimerConfigs[i].pwmConfig, TIM_CHANNEL_1) // TODO -- make output channel configurable
+            configRet |= HAL_TIM_PWM_ConfigChannel(&TimerConfigs[i].timConfig, &TimerConfigs[i].pwmConfig, TIM_CHANNEL_1); // TODO -- make output channel configurable
         }
 
         if (configRet != HAL_OK)
