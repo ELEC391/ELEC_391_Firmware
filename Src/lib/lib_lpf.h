@@ -1,6 +1,6 @@
 /**
  * @file lib_lpf.h
- * @brief Library containing first order discrete time low pass filter
+ * @brief Library containing IIR first order low pass filter
  */
 
 #ifndef LIB_LPF_H_
