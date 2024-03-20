@@ -80,14 +80,14 @@ void AppMotor_10kHz(void)
 
     // Update raw data
     RawMotorData.positionPrev = RawMotorData.position;
-    RawMotorData.position = Encoder.count * ((float_t) DEGREE_PER_COUNT); // ouput Degree
+    RawMotorData.position = Encoder.count * DEGREE_PER_COUNT; // ouput Degree
     RawMotorData.velocityPrev = RawMotorData.velocity;
     RawMotorData.velocity = Encoder.deltaCount * (DEGREE_PER_COUNT * SAMPLE_FREQ_HZ * SEC_PER_MIN) / (DEGREE_PER_ROTATION); // output RPM
     // Update filtered data
     FilteredMotorData.positionPrev = FilteredMotorData.position;
-    FilteredMotorData.position = Lib_lpf(RawMotorData.position, RawMotorData.positionPrev, FilteredMotorData.positionPrev, (float_t) CUTOFF_HZ, (float_t) SAMPLE_FREQ_HZ);
+    FilteredMotorData.position = Lib_lpf(RawMotorData.position, RawMotorData.positionPrev, FilteredMotorData.positionPrev, CUTOFF_HZ, SAMPLE_FREQ_HZ);
     FilteredMotorData.velocityPrev = FilteredMotorData.velocity;
-    FilteredMotorData.velocity = Lib_lpf(RawMotorData.velocity, RawMotorData.velocityPrev, FilteredMotorData.velocityPrev, (float_t) CUTOFF_HZ, (float_t) SAMPLE_FREQ_HZ);
+    FilteredMotorData.velocity = Lib_lpf(RawMotorData.velocity, RawMotorData.velocityPrev, FilteredMotorData.velocityPrev, CUTOFF_HZ, SAMPLE_FREQ_HZ);
 }
 
 float_t AppMotor_getVelocity_Raw(void)
@@ -130,8 +130,7 @@ int64_t AppMotor_getEncoderCount(void)
 /*                      P R I V A T E  F U N C T I O N S                      */
 /******************************************************************************/
 
-// Stolen from https://www.steppeschool.com/pages/blog/stm32-timer-encoder-mode
-// I might have a stroke seeing how this copy pasta is formatted
+// From https://www.steppeschool.com/pages/blog/stm32-timer-encoder-mode
 static void updateEncoderPulseCount(void)
  {
 uint16_t temp_counter = __HAL_TIM_GET_COUNTER(&htim1);
