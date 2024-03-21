@@ -27,7 +27,7 @@ typedef enum DeviceGpio_Pin
     BOARD_LED_PIN = 0,
     DEBUG_PIN_D7,
     DEBUG_PIN_D8,
-    BLUE_BUTTON_PIN,
+    cod,
     NUM_GPIO_PINS
 }DeviceGpio_Pin;
 

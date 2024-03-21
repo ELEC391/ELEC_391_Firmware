@@ -39,33 +39,35 @@ C_SOURCES =  \
 ../Src/device/device_irq.c \
 ../Src/device/device_gpio.c \
 ../Src/device/device_config.c \
-../Src/device/hal_Config/system_stm32h5xx.c \
+../Src/device/hal_Config/system_stm32h7xx.c \
 ../Src/lib/lib_lpf.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_tim.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_tim_ex.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_cortex.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc_ex.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash_ex.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_gpio.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma_ex.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr_ex.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_exti.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_icache.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pcd.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pcd_ex.c \
-../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_ll_usb.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_hsem.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma_ex.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_mdma.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c_ex.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_eth.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_eth_ex.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim_ex.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c \
+../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c \
 ../Src/main.c
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32h503xx.s
+startup_stm32h723xx.s
 
 # ASM sources
 ASMM_SOURCES =
@@ -95,10 +97,10 @@ BIN = $(CP) -O binary -S
 # CFLAGS
 #######################################
 # cpu
-CPU = -mcpu=cortex-m33
+CPU = -mcpu=cortex-m7
 
 # fpu
-FPU = -mfpu=fpv4-sp-d16
+FPU = -mfpu=fpv5-d16
 
 # float-abi
 FLOAT-ABI = -mfloat-abi=hard
@@ -113,7 +115,7 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32H503xx
+-DSTM32H723xx
 
 
 # AS includes
@@ -126,10 +128,10 @@ C_INCLUDES =  \
 -I../src/device/hal_Config \
 -I../src/lib/ \
 -I../src \
--I../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Inc \
--I../STM32CubeH5/Drivers/STM32H5xx_HAL_Driver/Inc/Legacy \
--I../STM32CubeH5/Drivers/CMSIS/Device/ST/STM32H5xx/Include \
--I../STM32CubeH5/Drivers/CMSIS/Include
+-I../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Inc \
+-I../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy \
+-I../STM32CubeH7/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
+-I../STM32CubeH7/Drivers/CMSIS/Include
 
 
 # compile gcc flags
@@ -150,7 +152,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = STM32H503xx_FLASH.ld
+LDSCRIPT = STM32H723ZGTx_FLASH.ld
 
 # libraries
 LIBS = -lc -lm -lnosys
