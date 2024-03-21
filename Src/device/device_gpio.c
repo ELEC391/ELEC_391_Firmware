@@ -102,7 +102,7 @@ void DeviceGpio_init(void)
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOD_CLK_ENABLE();
 
-    for(DeviceGpio_Pin i = (DeviceGpio_Pin) 1U; i < NUM_GPIO_PINS; i++)
+    for(DeviceGpio_Pin i = (DeviceGpio_Pin) 0U; i < NUM_GPIO_PINS; i++)
     {
         HAL_GPIO_WritePin(gpioConfig[i].gpioPort, gpioConfig[i].gpioInitConfig.Pin, GPIO_PIN_RESET);
         HAL_GPIO_Init(gpioConfig[i].gpioPort, &gpioConfig[i].gpioInitConfig);

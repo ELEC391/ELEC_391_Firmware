@@ -24,10 +24,15 @@
 /******************************************************************************/
 typedef enum DeviceTimer_Num
 {
-    MAIN_CONTROL_TIMER = 1,
+    MAIN_CONTROL_TIMER = 0,
     SIGNAL_FILTER_TIMER,
     NUM_DEVICE_TIMERS
 } DeviceTimer_Num;
+typedef enum DeviceEncoder_Num
+{
+    TEST_ENCODER = 0,
+    NUM_DEVICE_ENCODERS
+} DeviceEncoder_Num;
 
 /******************************************************************************/
 /*                       G L O B A L  V A R I A B L E S                       */
@@ -45,16 +50,51 @@ typedef enum DeviceTimer_Num
  *
  */
 void DeviceTimer_init(void);
-void DeviceTimer_startIrq(DeviceTimer_Num timer);
-void DeviceTimer_startEncoder(void);
 
 /**
- * @brief Will handle timer interrupt if enabled otherwise no-op
+ * @brief Will Start requested timer interrupt
  *
+ * @param timer Enum value for desired timer
+ */
+void DeviceTimer_startIrq(DeviceTimer_Num timer);
+
+/**
+ * @brief To be called inside ISR to handle interrupt
+ *
+ * @param timer Enum value for desired timer
  */
 void DeviceTimer_handleIrq(DeviceTimer_Num timer);
 
-uint16_t DeviceTimer_getEncoderCount(void);
+/**
+ * @brief Will start desired encoder to count quadrature pulses
+ *
+ * @param encoder Enum value for desired encoder
+ */
+void DeviceTimer_startEncoder(DeviceEncoder_Num encoder);
+
+/**
+ * @brief Return count of request encoder
+ *
+ * @param encoder Enum value for desired encoder
+ * @return Count register value
+ */
+uint16_t DeviceTimer_getEncoderCount(DeviceEncoder_Num encoder);
+
+/**
+ * @brief Return bool if counting downwards
+ *
+ * @param encoder Enum value for desired encoder
+ * @return bool of count direction
+ */
+bool DeviceTimer_isEncoderCountingDown(DeviceEncoder_Num encoder);
+
+/**
+ * @brief Return encoder auto reloader register
+ *
+ * @param encoder Enum value for desired encoder
+ * @return 32 bit values of auto reload register
+ */
+uint32_t DeviceTimer_getEncoderAutoReload(DeviceEncoder_Num encoder);
 
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */
