@@ -38,34 +38,56 @@ typedef struct GpioConfig
 
 static GpioConfig gpioConfig[NUM_GPIO_PINS] =
 {
-    [BOARD_LED_PIN] =
+    [RED_LED_PIN] =
     {
-        .gpioPort = GPIOA,
+        .gpioPort = GPIOB,
         .gpioInitConfig =
         {
-            .Pin = GPIO_PIN_5,
+            .Pin = GPIO_PIN_14,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW,
         }
     },
-    [DEBUG_PIN_D7] =
+    [YELLOW_LED_PIN] =
     {
-        .gpioPort = GPIOC,
+        .gpioPort = GPIOE,
         .gpioInitConfig =
         {
-            .Pin = GPIO_PIN_7,
+            .Pin = GPIO_PIN_1,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [DEBUG_PIN_D8] =
+    [GREEN_LED_PIN] =
     {
-        .gpioPort = GPIOA,
+        .gpioPort = GPIOB,
         .gpioInitConfig =
         {
-            .Pin = GPIO_PIN_8,
+            .Pin = GPIO_PIN_0,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [DEBUG_PIN_D64] =
+    {
+        .gpioPort = GPIOG,
+        .gpioInitConfig =
+        {
+            .Pin = GPIO_PIN_1,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [DEBUG_PIN_D65] =
+    {
+        .gpioPort = GPIOG,
+        .gpioInitConfig =
+        {
+            .Pin = GPIO_PIN_0,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -77,7 +99,7 @@ static GpioConfig gpioConfig[NUM_GPIO_PINS] =
         .gpioInitConfig =
         {
             .Pin = GPIO_PIN_13,
-            .Mode = GPIO_MODE_IT_RISING,
+            .Mode = GPIO_MODE_INPUT,
             .Pull = GPIO_NOPULL
         }
     }
@@ -97,10 +119,13 @@ void DeviceGpio_init(void)
 {
     // GPIO Ports Clock Enable
     __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOF_CLK_ENABLE();
     __HAL_RCC_GPIOH_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOD_CLK_ENABLE();
+    __HAL_RCC_GPIOG_CLK_ENABLE();
+    __HAL_RCC_GPIOE_CLK_ENABLE();
 
     for(DeviceGpio_Pin i = (DeviceGpio_Pin) 0U; i < NUM_GPIO_PINS; i++)
     {

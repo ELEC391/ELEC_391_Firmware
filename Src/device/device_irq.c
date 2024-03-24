@@ -12,7 +12,7 @@
 #include "device_irq.h"
 #include "device_timer.h"
 #include "device_gpio.h"
-#include "app_motor.h"
+// #include "app_motor.h"
 
 
 /******************************************************************************/
@@ -55,23 +55,34 @@ void SampleComputeLoad(void);
 /******************************************************************************/
 void TIM3_IRQHandler(void)
 {
+    static uint16_t count = 0;
+
     // Handle IRQ
     DeviceTimer_handleIrq(SIGNAL_FILTER_TIMER);
 
     // Update signal
-    DeviceGpio_toggle(DEBUG_PIN_D8);
-    AppMotor_10kHz();
+    if (count >= 10000U)
+    {
+        count = 0;
+        DeviceGpio_toggle(YELLOW_LED_PIN);
+    }
+    count++;
+    // AppMotor_10kHz();
 }
 
 void TIM2_IRQHandler(void)
 {
+    static uint16_t count = 0;
     // Handle IRQ
     DeviceTimer_handleIrq(MAIN_CONTROL_TIMER);
 
-    // ISR Timing
-    // DeviceGpio_toggle(DEBUG_PIN_D7);
-    // DeviceGpio_toggle(BOARD_LED_PIN);
-
+    if (count >= 500U)
+    {
+        count = 0;
+        DeviceGpio_toggle(RED_LED_PIN);
+        DeviceGpio_toggle(GREEN_LED_PIN);
+    }
+    count++;
     // Control execution timing
     SampleComputeLoad();
 }
@@ -158,13 +169,7 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-    /* USER CODE BEGIN SysTick_IRQn 0 */
-
-    /* USER CODE END SysTick_IRQn 0 */
     HAL_IncTick();
-    /* USER CODE BEGIN SysTick_IRQn 1 */
-
-    /* USER CODE END SysTick_IRQn 1 */
 }
 
 /******************************************************************************/

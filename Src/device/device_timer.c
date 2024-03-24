@@ -15,7 +15,7 @@
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-#define CLOCK_SPEED_MHZ 250
+#define CLOCK_SPEED_MHZ 550
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -94,26 +94,20 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
             .MasterOutputTrigger = TIM_TRGO_RESET,
             .MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE
         },
-        .pwmConfig =
-        {
-            .OCMode = TIM_OCMODE_PWM1,
-            .Pulse = 0,
-            .OCPolarity = TIM_OCPOLARITY_HIGH,
-            .OCFastMode = TIM_OCFAST_DISABLE,
-        }
+        .pwmConfig = {}
     },
 };
 
 static EncoderConfig EncoderConfigs[NUM_DEVICE_ENCODERS] =
 {
-    [TEST_ENCODER] =
+    [X_AXIS_ENCODER] =
     {
         .timConfig =
         {
-            .Instance = TIM1,
+            .Instance = TIM23,
             .Init.Prescaler = 0, // Not required
             .Init.CounterMode = TIM_COUNTERMODE_UP,
-            .Init.Period = 65535, // Default Max Value
+            .Init.Period = 4294967295, // Default Max Value
             .Init.ClockDivision = TIM_CLOCKDIVISION_DIV1,
             .Init.RepetitionCounter = 0,
             .Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE,
@@ -124,11 +118,42 @@ static EncoderConfig EncoderConfigs[NUM_DEVICE_ENCODERS] =
             .IC1Polarity = TIM_ICPOLARITY_RISING,
             .IC1Selection = TIM_ICSELECTION_DIRECTTI,
             .IC1Prescaler = TIM_ICPSC_DIV1,
-            .IC1Filter = 2, // Require at two clock cycles before counting -- increase if jitter is an issue
+            .IC1Filter = 5, // Require 5 clock cycles before counting -- increase if jitter is an issue
             .IC2Polarity = TIM_ICPOLARITY_RISING,
             .IC2Selection = TIM_ICSELECTION_DIRECTTI,
             .IC2Prescaler = TIM_ICPSC_DIV1,
-            .IC2Filter = 2, // Require at two clock cycles before counting -- increase if jitter is an issue
+            .IC2Filter = 5, // Require 5 clock cycles before counting -- increase if jitter is an issue
+        },
+        .masterConfig =
+        {
+            .MasterOutputTrigger = TIM_TRGO_RESET,
+            .MasterOutputTrigger2 = TIM_TRGO2_RESET,
+            .MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE
+        }
+    },
+    [Y_AXIS_ENCODER] =
+    {
+        .timConfig =
+        {
+            .Instance = TIM24,
+            .Init.Prescaler = 0, // Not required
+            .Init.CounterMode = TIM_COUNTERMODE_UP,
+            .Init.Period = 4294967295, // Default Max Value
+            .Init.ClockDivision = TIM_CLOCKDIVISION_DIV1,
+            .Init.RepetitionCounter = 0,
+            .Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE,
+        },
+        .encConfig =
+        {
+            .EncoderMode = TIM_ENCODERMODE_TI1,
+            .IC1Polarity = TIM_ICPOLARITY_RISING,
+            .IC1Selection = TIM_ICSELECTION_DIRECTTI,
+            .IC1Prescaler = TIM_ICPSC_DIV1,
+            .IC1Filter = 5, // Require 5 clock cycles before counting -- increase if jitter is an issue
+            .IC2Polarity = TIM_ICPOLARITY_RISING,
+            .IC2Selection = TIM_ICSELECTION_DIRECTTI,
+            .IC2Prescaler = TIM_ICPSC_DIV1,
+            .IC2Filter = 5, // Require 5 clock cycles before counting -- increase if jitter is an issue
         },
         .masterConfig =
         {
@@ -259,39 +284,66 @@ uint32_t DeviceTimer_getEncoderAutoReload(DeviceEncoder_Num encoder)
 
 void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* tim_encoderHandle)
 {
-
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    if (tim_encoderHandle->Instance==TIM1)
+    if(tim_encoderHandle->Instance==TIM23)
     {
-        /* TIM1 clock enable */
-        __HAL_RCC_TIM1_CLK_ENABLE();
+        /* TIM23 clock enable */
+        __HAL_RCC_TIM23_CLK_ENABLE();
 
-        __HAL_RCC_GPIOB_CLK_ENABLE();
-        /**TIM1 GPIO Configuration
-        PB1     ------> TIM1_CH1
-        PB4(NJTRST)     ------> TIM1_CH2
+        __HAL_RCC_GPIOF_CLK_ENABLE();
+        /**TIM23 GPIO Configuration
+        PF0     ------> TIM23_CH1
+        PF1     ------> TIM23_CH2
         */
-        GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_4;
+        GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
         GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-        GPIO_InitStruct.Alternate = GPIO_AF14_TIM1;
-        HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+        GPIO_InitStruct.Alternate = GPIO_AF13_TIM23;
+        HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+    }
+    else if(tim_encoderHandle->Instance==TIM24)
+    {
+        /* TIM24 clock enable */
+        __HAL_RCC_TIM24_CLK_ENABLE();
+
+        __HAL_RCC_GPIOF_CLK_ENABLE();
+        /**TIM24 GPIO Configuration
+        PF11     ------> TIM24_CH1
+        PF12     ------> TIM24_CH2
+        */
+        GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
+        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+        GPIO_InitStruct.Pull = GPIO_NOPULL;
+        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+        GPIO_InitStruct.Alternate = GPIO_AF14_TIM24;
+        HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
     }
 }
 
 void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
 {
-    if(tim_encoderHandle->Instance==TIM1)
+    if(tim_encoderHandle->Instance==TIM23)
     {
-    /* Peripheral clock disable */
-    __HAL_RCC_TIM1_CLK_DISABLE();
+        /* Peripheral clock disable */
+        __HAL_RCC_TIM23_CLK_DISABLE();
 
-    /**TIM1 GPIO Configuration
-    PB1     ------> TIM1_CH1
-    PB4(NJTRST)     ------> TIM1_CH2
-    */
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_1|GPIO_PIN_4);
+        /**TIM23 GPIO Configuration
+        PF0     ------> TIM23_CH1
+        PF1     ------> TIM23_CH2
+        */
+        HAL_GPIO_DeInit(GPIOF, GPIO_PIN_0|GPIO_PIN_1);
+    }
+    else if(tim_encoderHandle->Instance==TIM24)
+    {
+        /* Peripheral clock disable */
+        __HAL_RCC_TIM24_CLK_DISABLE();
+
+        /**TIM24 GPIO Configuration
+        PF11     ------> TIM24_CH1
+        PF12     ------> TIM24_CH2
+        */
+        HAL_GPIO_DeInit(GPIOF, GPIO_PIN_11|GPIO_PIN_12);
     }
 }
 

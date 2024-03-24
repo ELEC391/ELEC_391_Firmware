@@ -11,7 +11,7 @@
 #include "device_config.h"
 #include "device_gpio.h"
 #include "device_timer.h"
-#include "app_motor.h"
+// #include "app_motor.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -31,6 +31,7 @@
 
 static void SystemClock_Config(void);
 static void enableCache(void);
+
 // static void MX_USART3_UART_Init(void);
 
 
@@ -57,8 +58,8 @@ void DeviceConfig_init(void)
     SystemClock_Config();
 
     // Peripheral configurations
-    // DeviceGpio_init();
-    // DeviceTimer_init(); // Configures main controller ISR
+    DeviceGpio_init();
+    DeviceTimer_init(); // Configures main controller ISR
     // MX_USART3_UART_Init();
 
 
@@ -66,8 +67,8 @@ void DeviceConfig_init(void)
     // AppMotor_init();
 
     // // Start ISRs
-    // DeviceTimer_startIrq(MAIN_CONTROL_TIMER);
-    // DeviceTimer_startIrq(SIGNAL_FILTER_TIMER);
+    DeviceTimer_startIrq(MAIN_CONTROL_TIMER);
+    DeviceTimer_startIrq(SIGNAL_FILTER_TIMER);
 
 }
 
@@ -145,8 +146,6 @@ static void enableCache(void)
     SCB_EnableICache();
     SCB_EnableDCache();
 }
-
-
 
 
 /********************************* TODO FIX UART GARBAGE ************************************/

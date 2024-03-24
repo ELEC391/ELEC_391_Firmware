@@ -1,4 +1,4 @@
-# ADAPTED FROM CUBEMX AUTO_GEN FILE
+
 
 # ------------------------------------------------
 # Generic Makefile (based on gcc)
@@ -34,9 +34,12 @@ BUILD_DIR = ../build
 ######################################
 # C sources
 C_SOURCES =  \
+../Src/device/device_timer.c \
+../Src/device/device_gpio.c \
+../Src/device/device_irq.c \
 ../Src/device/device_config.c \
+../Src/device/hal_Config/stm32h7xx_hal_msp.c \
 ../Src/device/hal_Config/system_stm32h7xx.c \
-../Src/lib/lib_lpf.c \
 ../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c \
 ../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c \
 ../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c \
@@ -119,10 +122,8 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--I../src/app/ \
 -I../src/device/ \
 -I../src/device/hal_Config \
--I../src/lib/ \
 -I../src \
 -I../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Inc \
 -I../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy \

@@ -9,10 +9,11 @@
 
 #include "main.h"
 // #include "app_motor.h"
+#include "device/device_gpio.h"
 #include "device_config.h"
-// #include "device_gpio.h"
+#include "device_gpio.h"
 // #include "device_timer.h"
-#include "app_motor.h"
+// #include "app_motor.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -39,7 +40,8 @@ void Error_Handler(void)
     __disable_irq();
     while(1)
     {
-        // HAL_Delay(100);
+        HAL_Delay(100);
+        DeviceGpio_toggle(RED_LED_PIN);
     }
 }
 
@@ -87,8 +89,9 @@ int main(void)
         // /* Transfer error in transmission process */
         //     Error_Handler();
         // }
-        HAL_Delay(100);
-        // time = time + 100;
-        // DeviceGpio_toggle(BOARD_LED_PIN);
+        // HAL_Delay(500);
+        // DeviceGpio_toggle(RED_LED_PIN);
+        // DeviceGpio_toggle(GREEN_LED_PIN);
+        // DeviceGpio_toggle(YELLOW_LED_PIN);
     }
 }

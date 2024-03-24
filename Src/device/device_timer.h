@@ -30,7 +30,8 @@ typedef enum DeviceTimer_Num
 } DeviceTimer_Num;
 typedef enum DeviceEncoder_Num
 {
-    TEST_ENCODER = 0,
+    X_AXIS_ENCODER = 0,
+    Y_AXIS_ENCODER,
     NUM_DEVICE_ENCODERS
 } DeviceEncoder_Num;
 
