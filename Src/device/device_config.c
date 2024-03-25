@@ -12,6 +12,8 @@
 #include "device_gpio.h"
 #include "device_timer.h"
 #include "app_motor.h"
+#include "device_uart.h"
+// #include "app_motor.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -59,8 +61,7 @@ void DeviceConfig_init(void)
     // Peripheral configurations
     DeviceGpio_init();
     DeviceTimer_init(); // Configures main controller ISR
-    MX_USART3_UART_Init();
-
+    DeviceUart_init();
 
     // App configurations
     AppMotor_init();
@@ -68,7 +69,6 @@ void DeviceConfig_init(void)
     // Start ISRs
     DeviceTimer_startIrq(MAIN_CONTROL_TIMER);
     DeviceTimer_startIrq(SIGNAL_FILTER_TIMER);
-
 }
 
 /******************************************************************************/
@@ -123,79 +123,6 @@ static void MX_USART3_UART_Init(void)
 //   LL_USART_EnableIT_ERROR(USART3);
 
 }
-
-void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
-{
-
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-  if(uartHandle->Instance==USART3)
-  {
-  /* USER CODE BEGIN USART3_MspInit 0 */
-
-  /* USER CODE END USART3_MspInit 0 */
-
-  /** Initializes the peripherals clock
-  */
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART3;
-    PeriphClkInitStruct.Usart3ClockSelection = RCC_USART3CLKSOURCE_PCLK1;
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-    {
-      Error_Handler();
-    }
-
-    /* USART3 clock enable */
-    __HAL_RCC_USART3_CLK_ENABLE();
-
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**USART3 GPIO Configuration
-    PA3     ------> USART3_RX
-    PA4     ------> USART3_TX
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF13_USART3;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    /* USART3 interrupt Init */
-    HAL_NVIC_SetPriority(USART3_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(USART3_IRQn);
-  /* USER CODE BEGIN USART3_MspInit 1 */
-
-  /* USER CODE END USART3_MspInit 1 */
-  }
-}
-
-void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
-{
-
-  if(uartHandle->Instance==USART3)
-  {
-  /* USER CODE BEGIN USART3_MspDeInit 0 */
-
-  /* USER CODE END USART3_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_USART3_CLK_DISABLE();
-
-    /**USART3 GPIO Configuration
-    PA3     ------> USART3_RX
-    PA4     ------> USART3_TX
-    */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_3|GPIO_PIN_4);
-
-    /* USART3 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(USART3_IRQn);
-  /* USER CODE BEGIN USART3_MspDeInit 1 */
-
-  /* USER CODE END USART3_MspDeInit 1 */
-  }
-}
-
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
 
 /**
  * @brief Configures System clock
