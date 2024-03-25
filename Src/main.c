@@ -9,10 +9,10 @@
 
 #include "main.h"
 // #include "app_motor.h"
-#include "device/device_gpio.h"
+#include "device/device_uart.h"
 #include "device_config.h"
 #include "device_gpio.h"
-// #include "device_timer.h"
+#include "device_uart.h"
 // #include "app_motor.h"
 
 /******************************************************************************/
@@ -65,9 +65,9 @@ int main(void)
     // float_t filtVel = 0;
     // float_t filtPos = 0;
     // int time = 0;
-    // char aTxMessage[100];
+    char aTxMessage[100];
 
-    // sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position,timeStep\r\n");
+    sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position,timeStep\r\n");
     // if(HAL_UART_Transmit(&huart3, (uint8_t*)aTxMessage, strlen(aTxMessage), 1000)!= HAL_OK)
     // {
     // /* Transfer error in transmission process */
@@ -93,5 +93,7 @@ int main(void)
         // DeviceGpio_toggle(RED_LED_PIN);
         // DeviceGpio_toggle(GREEN_LED_PIN);
         // DeviceGpio_toggle(YELLOW_LED_PIN);
+        HAL_Delay(1000);
+        DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
     }
 }

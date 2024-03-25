@@ -34,6 +34,7 @@ BUILD_DIR = ../build
 ######################################
 # C sources
 C_SOURCES =  \
+../Src/device/device_uart.c \
 ../Src/device/device_timer.c \
 ../Src/device/device_gpio.c \
 ../Src/device/device_irq.c \
