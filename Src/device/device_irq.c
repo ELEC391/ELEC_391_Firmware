@@ -12,7 +12,7 @@
 #include "device_irq.h"
 #include "device_timer.h"
 #include "device_gpio.h"
-// #include "app_motor.h"
+#include "app_motor.h"
 
 
 /******************************************************************************/
@@ -67,7 +67,7 @@ void TIM3_IRQHandler(void)
         DeviceGpio_toggle(YELLOW_LED_PIN);
     }
     count++;
-    // AppMotor_10kHz();
+    AppMotor_10kHz();
 }
 
 void TIM2_IRQHandler(void)

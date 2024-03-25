@@ -12,7 +12,7 @@
 #include "device_gpio.h"
 #include "device_timer.h"
 #include "device_uart.h"
-// #include "app_motor.h"
+#include "app_motor.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -64,7 +64,7 @@ void DeviceConfig_init(void)
     DeviceUart_init();
 
     // App configurations
-    // AppMotor_init();
+    AppMotor_init();
 
     // // Start ISRs
     DeviceTimer_startIrq(MAIN_CONTROL_TIMER);

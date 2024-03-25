@@ -9,7 +9,6 @@
 
 #include "main.h"
 #include "device_timer.h"
-#include <stdint.h>
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -114,7 +113,7 @@ static EncoderConfig EncoderConfigs[NUM_DEVICE_ENCODERS] =
         },
         .encConfig =
         {
-            .EncoderMode = TIM_ENCODERMODE_TI1,
+            .EncoderMode = TIM_ENCODERMODE_TI12,
             .IC1Polarity = TIM_ICPOLARITY_RISING,
             .IC1Selection = TIM_ICSELECTION_DIRECTTI,
             .IC1Prescaler = TIM_ICPSC_DIV1,
@@ -127,7 +126,6 @@ static EncoderConfig EncoderConfigs[NUM_DEVICE_ENCODERS] =
         .masterConfig =
         {
             .MasterOutputTrigger = TIM_TRGO_RESET,
-            .MasterOutputTrigger2 = TIM_TRGO2_RESET,
             .MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE
         }
     },
@@ -145,7 +143,7 @@ static EncoderConfig EncoderConfigs[NUM_DEVICE_ENCODERS] =
         },
         .encConfig =
         {
-            .EncoderMode = TIM_ENCODERMODE_TI1,
+            .EncoderMode = TIM_ENCODERMODE_TI12,
             .IC1Polarity = TIM_ICPOLARITY_RISING,
             .IC1Selection = TIM_ICSELECTION_DIRECTTI,
             .IC1Prescaler = TIM_ICPSC_DIV1,
@@ -158,7 +156,6 @@ static EncoderConfig EncoderConfigs[NUM_DEVICE_ENCODERS] =
         .masterConfig =
         {
             .MasterOutputTrigger = TIM_TRGO_RESET,
-            .MasterOutputTrigger2 = TIM_TRGO2_RESET,
             .MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE
         }
     }
@@ -234,7 +231,7 @@ void DeviceTimer_startEncoder(DeviceEncoder_Num encoder)
     }
 }
 
-uint16_t DeviceTimer_getEncoderCount(DeviceEncoder_Num encoder)
+volatile uint16_t DeviceTimer_getEncoderCount(DeviceEncoder_Num encoder)
 {
     uint16_t count = 0U; // TODO: configure better error handling
     if (encoder != NUM_DEVICE_ENCODERS)
@@ -245,7 +242,7 @@ uint16_t DeviceTimer_getEncoderCount(DeviceEncoder_Num encoder)
     return count;
 }
 
-bool DeviceTimer_isEncoderCountingDown(DeviceEncoder_Num encoder)
+volatile bool DeviceTimer_isEncoderCountingDown(DeviceEncoder_Num encoder)
 {
     bool isCountingDown = false; // TODO: configure better error handling
     if (encoder != NUM_DEVICE_ENCODERS)
@@ -256,7 +253,7 @@ bool DeviceTimer_isEncoderCountingDown(DeviceEncoder_Num encoder)
     return isCountingDown;
 }
 
-uint32_t DeviceTimer_getEncoderAutoReload(DeviceEncoder_Num encoder)
+volatile uint32_t DeviceTimer_getEncoderAutoReload(DeviceEncoder_Num encoder)
 {
     uint32_t arrCount = 0U; // TODO: configure better error handling
     if (encoder != NUM_DEVICE_ENCODERS)

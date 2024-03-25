@@ -10,8 +10,7 @@
 /*                              I N C L U D E S                               */
 /******************************************************************************/
 
-// Minimum required set of includes ordered from local to global and grouped
-// by category
+#include "device_timer.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -79,7 +78,7 @@ void DeviceTimer_startEncoder(DeviceEncoder_Num encoder);
  * @param encoder Enum value for desired encoder
  * @return Count register value
  */
-uint16_t DeviceTimer_getEncoderCount(DeviceEncoder_Num encoder);
+volatile uint16_t DeviceTimer_getEncoderCount(DeviceEncoder_Num encoder);
 
 /**
  * @brief Return bool if counting downwards
@@ -87,7 +86,7 @@ uint16_t DeviceTimer_getEncoderCount(DeviceEncoder_Num encoder);
  * @param encoder Enum value for desired encoder
  * @return bool of count direction
  */
-bool DeviceTimer_isEncoderCountingDown(DeviceEncoder_Num encoder);
+volatile bool DeviceTimer_isEncoderCountingDown(DeviceEncoder_Num encoder);
 
 /**
  * @brief Return encoder auto reloader register
@@ -95,7 +94,7 @@ bool DeviceTimer_isEncoderCountingDown(DeviceEncoder_Num encoder);
  * @param encoder Enum value for desired encoder
  * @return 32 bit values of auto reload register
  */
-uint32_t DeviceTimer_getEncoderAutoReload(DeviceEncoder_Num encoder);
+volatile uint32_t DeviceTimer_getEncoderAutoReload(DeviceEncoder_Num encoder);
 
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */

@@ -8,12 +8,11 @@
 /******************************************************************************/
 
 #include "main.h"
-// #include "app_motor.h"
-#include "device/device_uart.h"
+#include "device_timer.h"
 #include "device_config.h"
 #include "device_gpio.h"
 #include "device_uart.h"
-// #include "app_motor.h"
+#include "app_motor.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -57,43 +56,37 @@ int main(void)
     // Configure hardware
     DeviceConfig_init();
 
-    // int16_t velocity = 0;
-    // int64_t position = 0;
 
-    // float_t velocity = 0;
-    // float_t position = 0;
-    // float_t filtVel = 0;
-    // float_t filtPos = 0;
+    // Test and Debug params
+    // uint16_t countx = 0;
+    // int64_t county = 0;
+
+    float_t velocity = 0;
+    float_t position = 0;
+    float_t filtVel = 0;
+    float_t filtPos = 0;
+
     // int time = 0;
     char aTxMessage[100];
 
-    sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position,timeStep\r\n");
-    // if(HAL_UART_Transmit(&huart3, (uint8_t*)aTxMessage, strlen(aTxMessage), 1000)!= HAL_OK)
-    // {
-    // /* Transfer error in transmission process */
-    // Error_Handler();
-    // }
+    sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position\r\n");
+    DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+    DeviceEncoder_Num encoder = X_AXIS_ENCODER;
+
     // Main loop
     while (1)
     {
-        // // count = DeviceTimer_getEncoderCount();
-        // velocity =  AppMotor_getVelocity_Raw();
-        // position =   AppMotor_getPosition_Raw();
-        // filtVel =  AppMotor_getVelocity_10kHz();
-        // filtPos =   AppMotor_getPosition_10kHz();
-        // // velocity =  AppMotor_getEncoderVelocity();
-        // // position =   AppMotor_getEncoderCount() * (0.01470F);
-        // sprintf(aTxMessage, "%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos, time);
-        // if(HAL_UART_Transmit(&huart3, (uint8_t*)aTxMessage, strlen(aTxMessage), 1000)!= HAL_OK)
-        // {
-        // /* Transfer error in transmission process */
-        //     Error_Handler();
-        // }
-        // HAL_Delay(500);
-        // DeviceGpio_toggle(RED_LED_PIN);
-        // DeviceGpio_toggle(GREEN_LED_PIN);
-        // DeviceGpio_toggle(YELLOW_LED_PIN);
-        HAL_Delay(1000);
+        velocity =  AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
+        position =   AppMotor_getPosition_Raw(X_AXIS_ENCODER);
+        filtVel =  AppMotor_getVelocity_10kHz(X_AXIS_ENCODER);
+        filtPos =   AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
+        sprintf(aTxMessage, "%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos);
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+
+        // countx = DeviceTimer_getEncoderCount(encoder);
+        // county = AppMotor_getEncoderCount(encoder);
+        // // sprintf(aTxMessage, "%d,%d\r\n", (int) county, (int) countx);
+        // // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        HAL_Delay(1000);
     }
 }
