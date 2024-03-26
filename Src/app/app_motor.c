@@ -17,15 +17,13 @@
 /******************************************************************************/
 
 // TODO figure out weird floating point macro bug when writing as DEGREE_PER_ROTATION / PULSE_PER_ROTATION
-#define DEGREE_PER_COUNT 0.014706F //360 /  CPR * GEARING * 2 Counts per Pulse for encoder mode
+#define DEGREE_PER_COUNT 0.007353F //360 /  (CPR * GEARING * 4) Counts per Pulse for encoder mode
 #define DEGREE_PER_ROTATION 360
 
 // Filter Defines
 #define SAMPLE_FREQ_HZ 10000
 #define CUTOFF_HZ 150
 #define SEC_PER_MIN 60
-
-
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -42,20 +40,41 @@ typedef struct{
     float_t velocityPrev;
 	float_t position;
     float_t positionPrev;
+}App_MotorControlData;
+
+typedef struct{
+    App_MotorEncoder encoder;
+    App_MotorControlData rawData;
+    App_MotorControlData filteredData;
 }App_MotorData;
+
 /******************************************************************************/
 /*            P R I V A T E  F U N C T I O N  P R O T O T Y P E S             */
 /******************************************************************************/
 
-static void updateEncoderPulseCount(void);
+static void updateEncoderPulseCount(DeviceEncoder_Num encoder);
+static void updateMotorData(DeviceEncoder_Num encoder);
 
 /******************************************************************************/
 /*               P R I V A T E  G L O B A L  V A R I A B L E S                */
 /******************************************************************************/
 
-static volatile App_MotorEncoder Encoder = {};
-static volatile App_MotorData RawMotorData = {};
-static volatile App_MotorData FilteredMotorData = {};
+static volatile App_MotorData MotorData[NUM_DEVICE_ENCODERS] =
+{
+    // Initialize all data to 0
+    [X_AXIS_ENCODER] =
+    {
+        .encoder = {0},
+        .rawData = {0},
+        .filteredData = {0}
+    },
+    [Y_AXIS_ENCODER] =
+    {
+        .encoder = {0},
+        .rawData = {0},
+        .filteredData = {0}
+    }
+};
 
 /******************************************************************************/
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
@@ -67,60 +86,82 @@ static volatile App_MotorData FilteredMotorData = {};
 
 void AppMotor_init(void)
 {
-    DeviceTimer_startEncoder(TEST_ENCODER);
-    updateEncoderPulseCount();
+    DeviceTimer_startEncoder(X_AXIS_ENCODER);
+    DeviceTimer_startEncoder(Y_AXIS_ENCODER);
+
+    updateEncoderPulseCount(X_AXIS_ENCODER);
+    updateEncoderPulseCount(Y_AXIS_ENCODER);
 }
 
 void AppMotor_10kHz(void)
 {
-    // Update Encoder Pulse Count
-    updateEncoderPulseCount();
+    // Update X-Axis Motor
+    updateEncoderPulseCount(X_AXIS_ENCODER);
+    updateMotorData(X_AXIS_ENCODER);
 
-    // Update raw data
-    RawMotorData.positionPrev = RawMotorData.position;
-    RawMotorData.position = Encoder.count * DEGREE_PER_COUNT; // ouput Degree
-    RawMotorData.velocityPrev = RawMotorData.velocity;
-    RawMotorData.velocity = Encoder.deltaCount * (DEGREE_PER_COUNT * SAMPLE_FREQ_HZ * SEC_PER_MIN) / (DEGREE_PER_ROTATION); // output RPM
-    // Update filtered data
-    FilteredMotorData.positionPrev = FilteredMotorData.position;
-    FilteredMotorData.position = Lib_lpf(RawMotorData.position, RawMotorData.positionPrev, FilteredMotorData.positionPrev, CUTOFF_HZ, SAMPLE_FREQ_HZ);
-    FilteredMotorData.velocityPrev = FilteredMotorData.velocity;
-    FilteredMotorData.velocity = Lib_lpf(RawMotorData.velocity, RawMotorData.velocityPrev, FilteredMotorData.velocityPrev, CUTOFF_HZ, SAMPLE_FREQ_HZ);
+    // Update Y-Axis Motor
+    updateEncoderPulseCount(Y_AXIS_ENCODER);
+    updateMotorData(Y_AXIS_ENCODER);
 }
 
-float_t AppMotor_getVelocity_Raw(void)
+float_t AppMotor_getVelocity_Raw(DeviceEncoder_Num encoder)
 {
-    float_t ret = RawMotorData.velocity;
+    float_t ret = 0;
+    if (encoder < NUM_DEVICE_ENCODERS)
+    {
+        ret = MotorData[encoder].rawData.velocity;
+    }
+
     return ret;
 }
 
-float_t AppMotor_getPosition_Raw(void)
+float_t AppMotor_getPosition_Raw(DeviceEncoder_Num encoder)
 {
-    float_t ret = RawMotorData.position;
+    float_t ret = 0;
+    if (encoder < NUM_DEVICE_ENCODERS)
+    {
+        ret = MotorData[encoder].rawData.position;
+    }
     return ret;
 }
 
-float_t AppMotor_getVelocity_10kHz(void)
+float_t AppMotor_getVelocity_10kHz(DeviceEncoder_Num encoder)
 {
-    float_t ret = FilteredMotorData.velocity;
+    float_t ret = 0;
+    if (encoder < NUM_DEVICE_ENCODERS)
+    {
+        ret = MotorData[encoder].filteredData.velocity;
+    }
     return ret;
 }
 
-float_t AppMotor_getPosition_10kHz(void)
+float_t AppMotor_getPosition_10kHz(DeviceEncoder_Num encoder)
 {
-    float_t ret = FilteredMotorData.position;
+    float_t ret = 0;
+    if (encoder < NUM_DEVICE_ENCODERS)
+    {
+        ret = MotorData[encoder].filteredData.position;
+    }
     return ret;
 }
 
-int16_t AppMotor_getEncoderVelocity(void)
+int16_t AppMotor_getEncoderVelocity(DeviceEncoder_Num encoder)
 {
-    int16_t ret = Encoder.deltaCount;
+    int16_t ret = 0;
+    if (encoder < NUM_DEVICE_ENCODERS)
+    {
+        ret = MotorData[encoder].encoder.deltaCount;
+    }
     return ret;
 }
 
-int64_t AppMotor_getEncoderCount(void)
+int64_t AppMotor_getEncoderCount(DeviceEncoder_Num encoder)
 {
-    int64_t ret = Encoder.count;
+    int16_t ret = 0;
+    if (encoder < NUM_DEVICE_ENCODERS)
+    {
+        ret = MotorData[encoder].encoder.count;
+    }
     return ret;
 }
 
@@ -128,48 +169,57 @@ int64_t AppMotor_getEncoderCount(void)
 /*                      P R I V A T E  F U N C T I O N S                      */
 /******************************************************************************/
 
-// From https://www.steppeschool.com/pages/blog/stm32-timer-encoder-mode
-static void updateEncoderPulseCount(void)
+static void updateMotorData(DeviceEncoder_Num encoder)
 {
-    uint16_t temp_counter = DeviceTimer_getEncoderCount(TEST_ENCODER);
+    // Update raw data
+    MotorData[encoder].rawData.positionPrev = MotorData[encoder].rawData.position;
+    MotorData[encoder].rawData.position = MotorData[encoder].encoder.count * DEGREE_PER_COUNT; // output Degree
+    MotorData[encoder].rawData.velocityPrev = MotorData[encoder].rawData.velocity;
+    MotorData[encoder].rawData.velocity = MotorData[encoder].encoder.deltaCount * (DEGREE_PER_COUNT * SAMPLE_FREQ_HZ * SEC_PER_MIN) / (DEGREE_PER_ROTATION * 2); // output RPM TODO Figure out why 2x is required on H7
 
-    static bool first_time = true;
-    if (first_time)
+    // Update Filtered Data
+    MotorData[encoder].filteredData.positionPrev = MotorData[encoder].filteredData.position;
+    MotorData[encoder].filteredData.position = Lib_lpf(MotorData[encoder].rawData.position, MotorData[encoder].rawData.positionPrev, MotorData[encoder].filteredData.positionPrev, CUTOFF_HZ, SAMPLE_FREQ_HZ);
+    MotorData[encoder].filteredData.velocityPrev = MotorData[encoder].filteredData.velocity;
+    MotorData[encoder].filteredData.velocity = Lib_lpf(MotorData[encoder].rawData.velocity, MotorData[encoder].rawData.velocityPrev, MotorData[encoder].filteredData.velocityPrev, CUTOFF_HZ, SAMPLE_FREQ_HZ);
+}
+
+// From https://www.steppeschool.com/pages/blog/stm32-timer-encoder-mode
+static volatile void updateEncoderPulseCount(DeviceEncoder_Num encoder)
+{
+    if (encoder < NUM_DEVICE_ENCODERS)
     {
-        Encoder.deltaCount = 0;
-        first_time = false;
-    }
-    else
-    {
-        if (temp_counter == Encoder.last_counter_value)
+        uint16_t temp_counter = DeviceTimer_getEncoderCount(encoder);
+
+        if (temp_counter == MotorData[encoder].encoder.last_counter_value)
         {
-            Encoder.deltaCount = 0;
+            MotorData[encoder].encoder.deltaCount = 0;
         }
-        else if(temp_counter > Encoder.last_counter_value)
+        else if (temp_counter > MotorData[encoder].encoder.last_counter_value)
         {
-            if (DeviceTimer_isEncoderCountingDown(TEST_ENCODER))
+            if (DeviceTimer_isEncoderCountingDown(encoder))
             {
-                Encoder.deltaCount = (- Encoder.last_counter_value - (DeviceTimer_getEncoderAutoReload(TEST_ENCODER) - temp_counter));
+                MotorData[encoder].encoder.deltaCount = (- MotorData[encoder].encoder.last_counter_value - (DeviceTimer_getEncoderAutoReload(encoder) - temp_counter));
             }
             else
             {
-                Encoder.deltaCount = temp_counter - Encoder.last_counter_value;
+                MotorData[encoder].encoder.deltaCount = temp_counter - MotorData[encoder].encoder.last_counter_value;
             }
         }
         else
         {
-            if (DeviceTimer_isEncoderCountingDown(TEST_ENCODER))
+            if (DeviceTimer_isEncoderCountingDown(encoder))
             {
-                Encoder.deltaCount = temp_counter - Encoder.last_counter_value;
+                MotorData[encoder].encoder.deltaCount = temp_counter - MotorData[encoder].encoder.last_counter_value;
             }
             else
             {
-                Encoder.deltaCount = temp_counter + (DeviceTimer_getEncoderAutoReload(TEST_ENCODER) - Encoder.last_counter_value);
+                MotorData[encoder].encoder.deltaCount = temp_counter + (DeviceTimer_getEncoderAutoReload(encoder) - MotorData[encoder].encoder.last_counter_value);
             }
         }
-    }
 
-    // Update counts
-    Encoder.count += Encoder.deltaCount;
-    Encoder.last_counter_value = temp_counter;
+        // Update counts
+        MotorData[encoder].encoder.count += MotorData[encoder].encoder.deltaCount;
+        MotorData[encoder].encoder.last_counter_value = temp_counter;
+    }
  }

@@ -11,6 +11,7 @@
 /******************************************************************************/
 
 #include "app_motor.h"
+#include "device_timer.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -36,12 +37,12 @@
 
 void AppMotor_10kHz(void);
 void AppMotor_init(void);
-float_t AppMotor_getVelocity_Raw(void);
-float_t AppMotor_getPosition_Raw(void);
-float_t AppMotor_getVelocity_10kHz(void);
-float_t AppMotor_getPosition_10kHz(void);
-int16_t AppMotor_getEncoderVelocity(void);
-int64_t AppMotor_getEncoderCount(void);
+float_t AppMotor_getVelocity_Raw(DeviceEncoder_Num encoder);
+float_t AppMotor_getPosition_Raw(DeviceEncoder_Num encoder);
+float_t AppMotor_getVelocity_10kHz(DeviceEncoder_Num encoder);
+float_t AppMotor_getPosition_10kHz(DeviceEncoder_Num encoder);
+int16_t AppMotor_getEncoderVelocity(DeviceEncoder_Num encoder);
+int64_t AppMotor_getEncoderCount(DeviceEncoder_Num encoder);
 
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */
