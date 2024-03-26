@@ -71,7 +71,6 @@ int main(void)
 
     sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position\r\n");
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-    DeviceEncoder_Num encoder = X_AXIS_ENCODER;
 
     // Main loop
     while (1)
@@ -87,6 +86,10 @@ int main(void)
         // county = AppMotor_getEncoderCount(encoder);
         // // sprintf(aTxMessage, "%d,%d\r\n", (int) county, (int) countx);
         // // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-        HAL_Delay(1000);
+        HAL_Delay(100);
+        DeviceGpio_enable(GREEN_LED_PIN);
+        HAL_Delay(100);
+        DeviceGpio_disable(GREEN_LED_PIN);
+
     }
 }

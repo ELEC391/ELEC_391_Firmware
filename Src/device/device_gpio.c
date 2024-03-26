@@ -136,7 +136,26 @@ void DeviceGpio_init(void)
 
 void DeviceGpio_toggle(DeviceGpio_Pin pin_num)
 {
-    HAL_GPIO_TogglePin(gpioConfig[pin_num].gpioPort, gpioConfig[pin_num].gpioInitConfig.Pin);
+    if (pin_num < NUM_GPIO_PINS)
+    {
+        HAL_GPIO_TogglePin(gpioConfig[pin_num].gpioPort, gpioConfig[pin_num].gpioInitConfig.Pin);
+    }
+}
+
+void DeviceGpio_enable(DeviceGpio_Pin pin_num)
+{
+    if (pin_num < NUM_GPIO_PINS)
+    {
+        HAL_GPIO_WritePin(gpioConfig[pin_num].gpioPort, gpioConfig[pin_num].gpioInitConfig.Pin, GPIO_PIN_SET);
+    }
+}
+
+void DeviceGpio_disable(DeviceGpio_Pin pin_num)
+{
+    if (pin_num < NUM_GPIO_PINS)
+    {
+        HAL_GPIO_WritePin(gpioConfig[pin_num].gpioPort, gpioConfig[pin_num].gpioInitConfig.Pin, GPIO_PIN_RESET);
+    }
 }
 
 /******************************************************************************/

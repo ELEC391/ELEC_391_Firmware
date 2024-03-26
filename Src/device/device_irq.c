@@ -80,7 +80,6 @@ void TIM2_IRQHandler(void)
     {
         count = 0;
         DeviceGpio_toggle(RED_LED_PIN);
-        DeviceGpio_toggle(GREEN_LED_PIN);
     }
     count++;
     // Control execution timing

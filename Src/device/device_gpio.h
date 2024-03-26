@@ -58,6 +58,22 @@ void DeviceGpio_init(void);
  */
 void DeviceGpio_toggle(DeviceGpio_Pin pin_num);
 
+/**
+ * @brief Enables Specified GPIO Pin
+ *
+ * Enables Specfied GPIO PIN -- Sets High
+ *
+ */
+void DeviceGpio_enable(DeviceGpio_Pin pin_num);
+
+/**
+ * @brief Disables Specified GPIO Pin
+ *
+ * Disables Specfied GPIO PIN -- Sets Low
+ *
+ */
+void DeviceGpio_disable(DeviceGpio_Pin pin_num);
+
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */
 /******************************************************************************/
