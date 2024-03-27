@@ -29,8 +29,6 @@ typedef enum DeviceGpio_Pin
     GREEN_LED_PIN,
     X_AXIS_MOTOR_ENABLE,
     Y_AXIS_MOTOR_ENABLE,
-    X_AXIS_MOTOR_IN1,
-    X_AXIS_MOTOR_IN2,
     DEBUG_PIN_D64,
     DEBUG_PIN_D65,
     BLUE_BUTTON_PIN,

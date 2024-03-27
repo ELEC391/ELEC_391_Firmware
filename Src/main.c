@@ -8,6 +8,8 @@
 /******************************************************************************/
 
 #include "main.h"
+#include <math.h>
+#include <stdbool.h>
 #include "device_timer.h"
 #include "device_config.h"
 #include "device_gpio.h"
@@ -41,6 +43,11 @@ void Error_Handler(void)
         HAL_Delay(100);
         DeviceGpio_toggle(RED_LED_PIN);
     }
+}
+
+float_t saturate(float_t val, float_t max, float_t min)
+{
+    return fmin(fmax(val, min), max);
 }
 
 /******************************************************************************/
@@ -78,7 +85,21 @@ int main(void)
     sprintf(aTxMessage, "%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos);
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
-    HAL_Delay(8000);
+    // HAL_Delay(8000);
+    DeviceGpio_enable(X_AXIS_MOTOR_ENABLE);
+
+    // DeviceGpio_enable(X_AXIS_MOTOR_IN1);
+    // DeviceGpio_disable(X_AXIS_MOTOR_IN2);
+    // HAL_Delay(2000);
+
+    // DeviceGpio_enable(X_AXIS_MOTOR_IN2);
+    // DeviceGpio_disable(X_AXIS_MOTOR_IN1);
+    HAL_Delay(2000);
+
+    bool dir = true;
+    float_t duty = 10U;
+    float_t inc = 10U;
+    bool inc_dir = true;
 
     // Main loop
     while (1)
@@ -89,24 +110,42 @@ int main(void)
         filtPos =   AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
         sprintf(aTxMessage, "%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos);
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        DeviceGpio_enable(GREEN_LED_PIN);
+        HAL_Delay(200);
+        DeviceGpio_disable(GREEN_LED_PIN);
 
-        // countx = DeviceTimer_getEncoderCount(encoder);
-        // county = AppMotor_getEncoderCount(encoder);
-        // // sprintf(aTxMessage, "%d,%d\r\n", (int) county, (int) countx);
-        // // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-        // HAL_Delay(100);
-        // DeviceGpio_enable(GREEN_LED_PIN);
-        // HAL_Delay(100);
-        // DeviceGpio_disable(GREEN_LED_PIN);
+        if (duty >= 100.0F)
+        {
+            inc_dir = false;
+        }
 
-        DeviceGpio_enable(X_AXIS_MOTOR_ENABLE);
+        if(duty <= 0.0F)
+        {
+            inc_dir = true;
+            dir = !dir;
+        }
 
-        DeviceGpio_enable(X_AXIS_MOTOR_IN1);
-        DeviceGpio_disable(X_AXIS_MOTOR_IN2);
-        HAL_Delay(2000);
+        if (inc_dir)
+        {
+            duty = duty + inc;
+        }
+        else
+        {
+            duty = duty - inc;
+        }
 
-        DeviceGpio_enable(X_AXIS_MOTOR_IN2);
-        DeviceGpio_disable(X_AXIS_MOTOR_IN1);
-        HAL_Delay(2000);
+        duty = saturate(duty, 100.0F, 0.0F);
+
+
+        if (dir)
+        {
+            DeviceTimer_setPwmDutyCycle(X_AXIS_PWM_TIMER, 1U, 0.0F);
+            DeviceTimer_setPwmDutyCycle(X_AXIS_PWM_TIMER, 0U, duty);
+        }
+        else
+        {
+            DeviceTimer_setPwmDutyCycle(X_AXIS_PWM_TIMER, 1U, duty);
+            DeviceTimer_setPwmDutyCycle(X_AXIS_PWM_TIMER, 0U, 0.0F);
+        }
     }
 }
