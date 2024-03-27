@@ -14,7 +14,7 @@
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-#define CLOCK_SPEED_MHZ 550
+#define TIMER_CLOCK_SPEED_MHZ 275
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -55,7 +55,7 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
             .Instance = TIM2,
             .Init.Prescaler = 999, // CLK / ((PRE +1)(Period + 1)) = 1/Timer Freq  => 1Khz
             .Init.CounterMode = TIM_COUNTERMODE_UP,
-            .Init.Period = CLOCK_SPEED_MHZ - 1,
+            .Init.Period = TIMER_CLOCK_SPEED_MHZ - 1,
             .Init.ClockDivision = TIM_CLOCKDIVISION_DIV1,
             .Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE,
         },
@@ -80,7 +80,7 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
             .Instance = TIM3,
             .Init.Prescaler = 99, // CLK / ((PRE +1)(Period + 1)) = 1/Timer Freq  => 10Khz
             .Init.CounterMode = TIM_COUNTERMODE_UP,
-            .Init.Period = CLOCK_SPEED_MHZ - 1,
+            .Init.Period = TIMER_CLOCK_SPEED_MHZ - 1,
             .Init.ClockDivision = TIM_CLOCKDIVISION_DIV1,
             .Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE,
         },
