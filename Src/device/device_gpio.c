@@ -71,6 +71,50 @@ static GpioConfig gpioConfig[NUM_GPIO_PINS] =
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
+    [X_AXIS_MOTOR_ENABLE] =
+    {
+        .gpioPort = GPIOG,
+        .gpioInitConfig =
+        {
+            .Pin = GPIO_PIN_14,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW,
+        }
+    },
+    [Y_AXIS_MOTOR_ENABLE] =
+    {
+        .gpioPort = GPIOC,
+        .gpioInitConfig =
+        {
+            .Pin = GPIO_PIN_2,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [X_AXIS_MOTOR_IN1] =
+    {
+        .gpioPort = GPIOE,
+        .gpioInitConfig =
+        {
+            .Pin = GPIO_PIN_11,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [X_AXIS_MOTOR_IN2] =
+    {
+        .gpioPort = GPIOE,
+        .gpioInitConfig =
+        {
+            .Pin = GPIO_PIN_14,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
     [DEBUG_PIN_D64] =
     {
         .gpioPort = GPIOG,

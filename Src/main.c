@@ -17,7 +17,6 @@
 /******************************************************************************/
 /*                               D E F I N E S                                */
 /******************************************************************************/
-// extern UART_HandleTypeDef huart3;
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -72,6 +71,15 @@ int main(void)
     sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position\r\n");
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
+    velocity =  AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
+    position =   AppMotor_getPosition_Raw(X_AXIS_ENCODER);
+    filtVel =  AppMotor_getVelocity_10kHz(X_AXIS_ENCODER);
+    filtPos =   AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
+    sprintf(aTxMessage, "%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos);
+    DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+
+    HAL_Delay(8000);
+
     // Main loop
     while (1)
     {
@@ -86,10 +94,19 @@ int main(void)
         // county = AppMotor_getEncoderCount(encoder);
         // // sprintf(aTxMessage, "%d,%d\r\n", (int) county, (int) countx);
         // // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-        HAL_Delay(100);
-        DeviceGpio_enable(GREEN_LED_PIN);
-        HAL_Delay(100);
-        DeviceGpio_disable(GREEN_LED_PIN);
+        // HAL_Delay(100);
+        // DeviceGpio_enable(GREEN_LED_PIN);
+        // HAL_Delay(100);
+        // DeviceGpio_disable(GREEN_LED_PIN);
 
+        DeviceGpio_enable(X_AXIS_MOTOR_ENABLE);
+
+        DeviceGpio_enable(X_AXIS_MOTOR_IN1);
+        DeviceGpio_disable(X_AXIS_MOTOR_IN2);
+        HAL_Delay(2000);
+
+        DeviceGpio_enable(X_AXIS_MOTOR_IN2);
+        DeviceGpio_disable(X_AXIS_MOTOR_IN1);
+        HAL_Delay(2000);
     }
 }
