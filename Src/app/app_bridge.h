@@ -1,43 +1,58 @@
 /**
- * @file main.h
- * @brief main header file -- only used as entry point for error handler
+ * @file app_bridge.c
+ * @brief app that interfaces with H-Bridges
  */
 
-#ifndef MAIN_H_
-#define MAIN_H_
+#ifndef APP_BRIDGE_H_
+#define APP_BRIDGE_H_
 
 /******************************************************************************/
 /*                              I N C L U D E S                               */
 /******************************************************************************/
 
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <math.h>
-#include "stm32h7xx_hal.h"
-
+#include "app_bridge.h"
+#include <math.h> // TODO -- not sure why this is needed for float_t used setBridge, this is not required in other apps
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
+// Public defines that may be used by other files
+
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
+
+typedef enum AppBridge_Num
+{
+    X_AXIS_BRIDGE = 0U,
+    NUM_APP_BRIDGE
+} AppBridge_Num;
+
+typedef enum AppBridge_State
+{
+    BRIDGE_OFF = 0U, // Disable Bridge output -- Motor terminals connected to high impeadance
+    BRIDGE_STOP, // connect both motor terminals to ground
+    BRIDGE_FORWARD, // PWM Channel A Driving
+    BRIDGE_REVERSE // PWM Channel B Driving
+} AppBridge_State;
 
 /******************************************************************************/
 /*                       G L O B A L  V A R I A B L E S                       */
 /******************************************************************************/
 
-// Public global variables that may be used by other files
-// (always declare extern)
-
 /******************************************************************************/
 /*                             F U N C T I O N S                              */
 /******************************************************************************/
 
-void Error_Handler(void);
-float_t saturate(float_t val, float_t max, float_t min);
+void AppBridge_init(void);
+void AppBridge_10kHz(void);
+void AppBridge_setBridge(AppBridge_Num bridge, AppBridge_State state, float_t dutyCycle);
 
-#endif // MAIN_H_
+/******************************************************************************/
+/*                       I N L I N E  F U N C T I O N S                       */
+/******************************************************************************/
+
+// Inline function declarations and implementations
+
+#endif // APP_BRIDGE_H_
