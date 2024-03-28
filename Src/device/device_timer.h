@@ -16,7 +16,8 @@
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-// Public defines that may be used by other files
+#define PWM_CHANNEL_A 0U
+#define PWM_CHANNEL_B 1U
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -25,6 +26,7 @@ typedef enum DeviceTimer_Num
 {
     MAIN_CONTROL_TIMER = 0,
     SIGNAL_FILTER_TIMER,
+    X_AXIS_PWM_TIMER,
     NUM_DEVICE_TIMERS
 } DeviceTimer_Num;
 typedef enum DeviceEncoder_Num
@@ -66,6 +68,21 @@ void DeviceTimer_startIrq(DeviceTimer_Num timer);
 void DeviceTimer_handleIrq(DeviceTimer_Num timer);
 
 /**
+ * @brief Will Start all configured PWM channels for a given timer
+ *
+ */
+void Device_timer_startAllPwmChannels(void);
+
+/**
+ * @brief Will Start all configured PWM channels for a given timer
+ *
+ * @param timer Enum value for desired timer
+ * @param pwmChannel Pwm Channel to be set
+ * @param dutyCycle Request Duty cycle
+ */
+void DeviceTimer_setPwmDutyCycle(DeviceTimer_Num timer, uint32_t pwmChannel, float_t dutyCycle);
+
+/**
  * @brief Will start desired encoder to count quadrature pulses
  *
  * @param encoder Enum value for desired encoder
@@ -94,7 +111,7 @@ volatile bool DeviceTimer_isEncoderCountingDown(DeviceEncoder_Num encoder);
  * @param encoder Enum value for desired encoder
  * @return 32 bit values of auto reload register
  */
-volatile uint32_t DeviceTimer_getEncoderAutoReload(DeviceEncoder_Num encoder);
+uint32_t DeviceTimer_getEncoderAutoReload(DeviceEncoder_Num encoder); // TODO -- Can remove this constant ARR value
 
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */

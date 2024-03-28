@@ -66,7 +66,10 @@ void DeviceConfig_init(void)
     // App configurations
     AppMotor_init();
 
-    // // Start ISRs
+    // Start PWM
+    Device_timer_startAllPwmChannels();
+
+    // Start ISRs
     DeviceTimer_startIrq(MAIN_CONTROL_TIMER);
     DeviceTimer_startIrq(SIGNAL_FILTER_TIMER);
 }
