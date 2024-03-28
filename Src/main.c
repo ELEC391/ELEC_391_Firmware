@@ -8,13 +8,12 @@
 /******************************************************************************/
 
 #include "main.h"
-#include <math.h>
-#include <stdbool.h>
 #include "device_timer.h"
 #include "device_config.h"
 #include "device_gpio.h"
 #include "device_uart.h"
 #include "app_motor.h"
+#include "app_bridge.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -85,21 +84,10 @@ int main(void)
     sprintf(aTxMessage, "%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos);
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
-    // HAL_Delay(8000);
-    DeviceGpio_enable(X_AXIS_MOTOR_ENABLE);
-
-    // DeviceGpio_enable(X_AXIS_MOTOR_IN1);
-    // DeviceGpio_disable(X_AXIS_MOTOR_IN2);
-    // HAL_Delay(2000);
-
-    // DeviceGpio_enable(X_AXIS_MOTOR_IN2);
-    // DeviceGpio_disable(X_AXIS_MOTOR_IN1);
     HAL_Delay(2000);
 
+    uint16_t count = 0;
     bool dir = true;
-    float_t duty = 10U;
-    float_t inc = 10U;
-    bool inc_dir = true;
 
     // Main loop
     while (1)
@@ -110,42 +98,23 @@ int main(void)
         filtPos =   AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
         sprintf(aTxMessage, "%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos);
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-        DeviceGpio_enable(GREEN_LED_PIN);
         HAL_Delay(200);
-        DeviceGpio_disable(GREEN_LED_PIN);
+        DeviceGpio_toggle(GREEN_LED_PIN);
 
-        if (duty >= 100.0F)
+        if (count >= 10U)
         {
-            inc_dir = false;
-        }
-
-        if(duty <= 0.0F)
-        {
-            inc_dir = true;
             dir = !dir;
-        }
+            if (dir)
+            {
+                AppBridge_setBridge(X_AXIS_BRIDGE, BRIDGE_FORWARD, 90.0F);
 
-        if (inc_dir)
-        {
-            duty = duty + inc;
+            }
+            else
+            {
+                AppBridge_setBridge(X_AXIS_BRIDGE, BRIDGE_REVERSE, 90.0F);
+            }
+            count = 0U;
         }
-        else
-        {
-            duty = duty - inc;
-        }
-
-        duty = saturate(duty, 100.0F, 0.0F);
-
-
-        if (dir)
-        {
-            DeviceTimer_setPwmDutyCycle(X_AXIS_PWM_TIMER, 1U, 0.0F);
-            DeviceTimer_setPwmDutyCycle(X_AXIS_PWM_TIMER, 0U, duty);
-        }
-        else
-        {
-            DeviceTimer_setPwmDutyCycle(X_AXIS_PWM_TIMER, 1U, duty);
-            DeviceTimer_setPwmDutyCycle(X_AXIS_PWM_TIMER, 0U, 0.0F);
-        }
+        count++;
     }
 }

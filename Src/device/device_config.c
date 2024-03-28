@@ -13,6 +13,7 @@
 #include "device_timer.h"
 #include "device_uart.h"
 #include "app_motor.h"
+#include "app_bridge.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -45,7 +46,6 @@ static void enableCache(void);
 /******************************************************************************/
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
 /******************************************************************************/
-// UART_HandleTypeDef huart3;
 
 /******************************************************************************/
 /*                       P U B L I C  F U N C T I O N S                       */
@@ -62,12 +62,11 @@ void DeviceConfig_init(void)
     DeviceGpio_init();
     DeviceTimer_init(); // Configures main controller ISR
     DeviceUart_init();
+    Device_timer_startAllPwmChannels();
 
     // App configurations
     AppMotor_init();
-
-    // Start PWM
-    Device_timer_startAllPwmChannels();
+    AppBridge_init();
 
     // Start ISRs
     DeviceTimer_startIrq(MAIN_CONTROL_TIMER);

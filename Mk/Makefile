@@ -34,6 +34,7 @@ BUILD_DIR = ../build
 ######################################
 # C sources
 C_SOURCES =  \
+../Src/app/app_bridge.c \
 ../Src/app/app_motor.c \
 ../Src/device/device_uart.c \
 ../Src/device/device_timer.c \

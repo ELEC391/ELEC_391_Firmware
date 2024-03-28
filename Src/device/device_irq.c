@@ -13,7 +13,7 @@
 #include "device_timer.h"
 #include "device_gpio.h"
 #include "app_motor.h"
-
+#include "app_bridge.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -60,13 +60,15 @@ void TIM3_IRQHandler(void)
     // Handle IRQ
     DeviceTimer_handleIrq(SIGNAL_FILTER_TIMER);
 
-    // Update signal
+    // Blinky Timing
     if (count >= 10000U)
     {
         count = 0;
         DeviceGpio_toggle(YELLOW_LED_PIN);
     }
     count++;
+
+    AppBridge_10kHz();
     AppMotor_10kHz();
 }
 
@@ -76,12 +78,14 @@ void TIM2_IRQHandler(void)
     // Handle IRQ
     DeviceTimer_handleIrq(MAIN_CONTROL_TIMER);
 
+    // Blinky Timing
     if (count >= 500U)
     {
         count = 0;
         DeviceGpio_toggle(RED_LED_PIN);
     }
     count++;
+
     // Control execution timing
     SampleComputeLoad();
 }
