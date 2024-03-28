@@ -71,7 +71,7 @@ void DeviceTimer_handleIrq(DeviceTimer_Num timer);
  * @brief Will Start all configured PWM channels for a given timer
  *
  */
-void Device_timer_startAllPwmChannels(void);
+void DeviceTimer_startAllPwmChannels(void);
 
 /**
  * @brief Will Start all configured PWM channels for a given timer

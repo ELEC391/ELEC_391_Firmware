@@ -14,6 +14,7 @@
 #include "device_uart.h"
 #include "app_motor.h"
 #include "app_bridge.h"
+#include "app_motor_control.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -77,44 +78,56 @@ int main(void)
     sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position\r\n");
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
-    velocity =  AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
-    position =   AppMotor_getPosition_Raw(X_AXIS_ENCODER);
+    velocity = AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
+    position = AppMotor_getPosition_Raw(X_AXIS_ENCODER);
     filtVel =  AppMotor_getVelocity_10kHz(X_AXIS_ENCODER);
-    filtPos =   AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
+    filtPos =  AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
     sprintf(aTxMessage, "%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos);
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
-    HAL_Delay(2000);
-
     uint16_t count = 0;
-    bool dir = true;
+    uint16_t count2 = 0;
+    float_t setpoint = 90.0F;
+    AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, setpoint);
+    HAL_Delay(2000);
+    AppMotorControl_configureController(X_AXIS_CONTROLLER, true);
+
 
     // Main loop
     while (1)
     {
-        velocity =  AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
-        position =   AppMotor_getPosition_Raw(X_AXIS_ENCODER);
+        velocity = AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
+        position = AppMotor_getPosition_Raw(X_AXIS_ENCODER);
         filtVel =  AppMotor_getVelocity_10kHz(X_AXIS_ENCODER);
-        filtPos =   AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
+        filtPos =  AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
         sprintf(aTxMessage, "%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos);
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-        HAL_Delay(200);
+        HAL_Delay(100);
         DeviceGpio_toggle(GREEN_LED_PIN);
 
-        if (count >= 10U)
+        if ((count >= 2U))
         {
-            dir = !dir;
-            if (dir)
+            if (setpoint > 0.0F)
             {
-                AppBridge_setBridge(X_AXIS_BRIDGE, BRIDGE_FORWARD, 90.0F);
-
+                setpoint = 0.0F;
             }
             else
             {
-                AppBridge_setBridge(X_AXIS_BRIDGE, BRIDGE_REVERSE, 90.0F);
+                setpoint = 90.0F;
             }
             count = 0U;
         }
         count++;
+        count2++;
+        if (count2 > 60U)
+        {
+            AppMotorControl_configureController(X_AXIS_CONTROLLER, false);
+
+        }
+        else
+        {
+            AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, setpoint);
+        }
     }
 }
+

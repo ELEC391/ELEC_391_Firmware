@@ -11,6 +11,7 @@
 /******************************************************************************/
 
 #include "lib_pi_compensator.h"
+#include "stm32h7xx_hal.h" // Use float_t defined here
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -36,8 +37,8 @@ typedef struct
 	float_t limMinInt;
 	float_t limMaxInt;
 
-	// Contorller Freq
-	float_t controllerFreq;
+	// Contorller Period
+	float_t T;
 
 	// Controller memory
 	float_t integrator;
@@ -60,8 +61,8 @@ typedef struct
 /*                             F U N C T I O N S                              */
 /******************************************************************************/
 
-void Lib_PI_init(Lib_PI_Controller* Contorller);
-float_t Lib_PI_updateController(Lib_PI_Controller* Contorller);
+void Lib_PI_init(Lib_PI_Controller* controller);
+float_t Lib_PI_updateController(Lib_PI_Controller* controller, float_t setPoint, float_t measurement);
 
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */

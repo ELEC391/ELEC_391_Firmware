@@ -14,6 +14,7 @@
 #include "device_gpio.h"
 #include "app_motor.h"
 #include "app_bridge.h"
+#include "app_motor_control.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -86,8 +87,7 @@ void TIM2_IRQHandler(void)
     }
     count++;
 
-    // Control execution timing
-    SampleComputeLoad();
+    AppMotorControl_1kHz();
 }
 
 // TODO Determine if these auto Gen functions are required

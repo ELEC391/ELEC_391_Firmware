@@ -34,6 +34,7 @@ BUILD_DIR = ../build
 ######################################
 # C sources
 C_SOURCES =  \
+../Src/app/app_motor_control.c \
 ../Src/app/app_bridge.c \
 ../Src/app/app_motor.c \
 ../Src/device/device_uart.c \
@@ -43,6 +44,7 @@ C_SOURCES =  \
 ../Src/device/device_config.c \
 ../Src/device/hal_Config/stm32h7xx_hal_msp.c \
 ../Src/device/hal_Config/system_stm32h7xx.c \
+../Src/lib/lib_pi_compensator.c \
 ../Src/lib/lib_lpf.c \
 ../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c \
 ../STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c \
