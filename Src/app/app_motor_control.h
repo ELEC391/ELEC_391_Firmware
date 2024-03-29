@@ -1,27 +1,32 @@
 /**
- * @file app_motor.h
- * @brief Motor App
+ * @file app_motor_control.h
+ * @brief App for closed loop postion control of motor
  */
 
-#ifndef APP_MOTOR_H_
-#define APP_MOTOR_H_
+#ifndef APP_MOTOR_CONTROL_H_
+#define APP_MOTOR_CONTROL_H_
 
 /******************************************************************************/
 /*                              I N C L U D E S                               */
 /******************************************************************************/
 
-#include "device_timer.h"
+#include "app_motor_control.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
+// Public defines that may be used by other files
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
 
-// Public typedefs that may be used by other files
+typedef enum AppMotorControl_Num
+{
+    X_AXIS_CONTROLLER = 0U,
+    NUM_APP_CONTROLLER
+} AppMotorControl_Num;
 
 /******************************************************************************/
 /*                       G L O B A L  V A R I A B L E S                       */
@@ -34,14 +39,10 @@
 /*                             F U N C T I O N S                              */
 /******************************************************************************/
 
-void AppMotor_10kHz(void);
-void AppMotor_init(void);
-float_t AppMotor_getVelocity_Raw(DeviceEncoder_Num encoder);
-float_t AppMotor_getPosition_Raw(DeviceEncoder_Num encoder);
-float_t AppMotor_getVelocity_10kHz(DeviceEncoder_Num encoder);
-float_t AppMotor_getPosition_10kHz(DeviceEncoder_Num encoder);
-int16_t AppMotor_getEncoderVelocity(DeviceEncoder_Num encoder);
-int64_t AppMotor_getEncoderCount(DeviceEncoder_Num encoder);
+void AppMotorControl_init(void);
+void AppMotorControl_1kHz(void);
+void AppMotorControl_requestSetPoint(AppMotorControl_Num contorller, float_t setPointRequest);
+void AppMotorControl_configureController(AppMotorControl_Num contorller, bool controllerEnabled);
 
 /******************************************************************************/
 /*                       I N L I N E  F U N C T I O N S                       */
@@ -49,4 +50,4 @@ int64_t AppMotor_getEncoderCount(DeviceEncoder_Num encoder);
 
 // Inline function declarations and implementations
 
-#endif // APP_MOTOR_H_
+#endif // APP_MOTOR_CONTROL_H_

@@ -13,8 +13,6 @@
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-#define FREQ_TO_PERIOD(x) 1.0 / x
-
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
@@ -43,47 +41,47 @@
 /*                       P U B L I C  F U N C T I O N S                       */
 /******************************************************************************/
 
-void Lib_PI_init(Lib_PI_Controller* Contorller)
+void Lib_PI_init(Lib_PI_Controller* controller)
 {
 	/* Clear controller variables */
-    Contorller->integrator = 0.0f;
-    Contorller->prevError  = 0.0f;
-    Contorller->out = 0.0f;
+    controller->integrator = 0.0f;
+    controller->prevError  = 0.0f;
+    controller->out = 0.0f;
 }
 
-float_t Lib_PI_updateController(Lib_PI_Controller* Contorller, float_t SetPoint, float_t Measurement)
+float_t Lib_PI_updateController(Lib_PI_Controller* controller, float_t setPoint, float_t measurement)
 {
-    float_t error = SetPoint - Measurement;
-    float_t proportional = Contorller->Kp * error;
+    float_t error = setPoint - measurement;
+    float_t proportional = controller->Kp * error;
 
     // Integrator
-    Contorller->integrator = Contorller->integrator + 0.5f * Contorller->Ki * Contorller->T * (error + Contorller->prevError);
+    controller->integrator = controller->integrator + 0.5f * controller->Ki * controller->T * (error + controller->prevError);
     // Anti-wind-up via integrator clamping
-    if (Contorller->integrator > Contorller->limMaxInt) {
+    if (controller->integrator > controller->limMaxInt) {
 
-        Contorller->integrator = Contorller->limMaxInt;
+        controller->integrator = controller->limMaxInt;
 
-    } else if (Contorller->integrator < Contorller->limMinInt) {
+    } else if (controller->integrator < controller->limMinInt) {
 
-        Contorller->integrator = Contorller->limMinInt;
+        controller->integrator = controller->limMinInt;
     }
 
     // Output clamping
-    Contorller->out = proportional + Contorller->integrator;
+    controller->out = proportional + controller->integrator;
 
-    if (Contorller->out > Contorller->limMax) {
+    if (controller->out > controller->limMax) {
 
-        Contorller->out = Contorller->limMax;
+        controller->out = controller->limMax;
 
-    } else if (Contorller->out < Contorller->limMin) {
+    } else if (controller->out < controller->limMin) {
 
-        Contorller->out = Contorller->limMin;
+        controller->out = controller->limMin;
 
     }
 
     // Update previous error for integrator
-    Contorller->prevError = error;
-    return Contorller->out;
+    controller->prevError = error;
+    return controller->out;
 }
 
 /******************************************************************************/

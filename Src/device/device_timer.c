@@ -285,7 +285,7 @@ void DeviceTimer_init(void)
     }
 }
 
-void Device_timer_startAllPwmChannels(void)
+void DeviceTimer_startAllPwmChannels(void)
 {
     HAL_TIM_PWM_Start(&TimerConfigs[X_AXIS_PWM_TIMER].timConfig, TimerConfigs[X_AXIS_PWM_TIMER].pwmConfig.channelA);
     HAL_TIM_PWM_Start(&TimerConfigs[X_AXIS_PWM_TIMER].timConfig, TimerConfigs[X_AXIS_PWM_TIMER].pwmConfig.channelB);

@@ -14,6 +14,7 @@
 #include "device_uart.h"
 #include "app_motor.h"
 #include "app_bridge.h"
+#include "app_motor_control.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -60,15 +61,17 @@ void DeviceConfig_init(void)
 
     // Peripheral configurations
     DeviceGpio_init();
-    DeviceTimer_init(); // Configures main controller ISR
+    DeviceTimer_init();
     DeviceUart_init();
-    Device_timer_startAllPwmChannels();
 
     // App configurations
     AppMotor_init();
     AppBridge_init();
+    AppMotorControl_init();
 
-    // Start ISRs
+
+    // Start ISRs and PWM
+    DeviceTimer_startAllPwmChannels();
     DeviceTimer_startIrq(MAIN_CONTROL_TIMER);
     DeviceTimer_startIrq(SIGNAL_FILTER_TIMER);
 }
