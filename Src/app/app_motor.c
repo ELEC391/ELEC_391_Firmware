@@ -32,7 +32,7 @@
 typedef struct{
 	int16_t deltaCount;
 	int64_t count;
-	uint16_t last_counter_value;
+	uint16_t lastCounterValue;
 }App_MotorEncoder;
 
 typedef struct{
@@ -46,6 +46,7 @@ typedef struct{
     App_MotorEncoder encoder;
     App_MotorControlData rawData;
     App_MotorControlData filteredData;
+    bool clearData;
 }App_MotorData;
 
 /******************************************************************************/
@@ -54,6 +55,7 @@ typedef struct{
 
 static void updateEncoderPulseCount(DeviceEncoder_Num encoder);
 static void updateMotorData(DeviceEncoder_Num encoder);
+static void ClearData(DeviceEncoder_Num encoder);
 
 /******************************************************************************/
 /*               P R I V A T E  G L O B A L  V A R I A B L E S                */
@@ -72,9 +74,12 @@ static volatile App_MotorData MotorData[NUM_DEVICE_ENCODERS] =
     {
         .encoder = {0},
         .rawData = {0},
-        .filteredData = {0}
+        .filteredData = {0},
     }
 };
+
+// Used for homing
+static bool clearData = false;
 
 /******************************************************************************/
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
@@ -95,13 +100,32 @@ void AppMotor_init(void)
 
 void AppMotor_10kHz(void)
 {
-    // Update X-Axis Motor
-    updateEncoderPulseCount(X_AXIS_ENCODER);
-    updateMotorData(X_AXIS_ENCODER);
+    static uint32_t clearDataDelay = 0U;
+    if (clearData)
+    {
+        ClearData(X_AXIS_ENCODER);
+        ClearData(Y_AXIS_ENCODER);
+        clearDataDelay++;
 
-    // Update Y-Axis Motor
-    updateEncoderPulseCount(Y_AXIS_ENCODER);
-    updateMotorData(Y_AXIS_ENCODER);
+        // 50ms wait after clearing
+        if (clearDataDelay > 500U)
+        {
+            clearData = false;
+            clearDataDelay = 0U;
+        }
+    }
+    else
+    {
+        updateEncoderPulseCount(X_AXIS_ENCODER);
+        updateMotorData(X_AXIS_ENCODER);
+        updateEncoderPulseCount(Y_AXIS_ENCODER);
+        updateMotorData(Y_AXIS_ENCODER);
+    }
+}
+
+void AppMotor_reinitializeData(void)
+{
+    clearData = true;
 }
 
 float_t AppMotor_getVelocity_Raw(DeviceEncoder_Num encoder)
@@ -169,6 +193,25 @@ int64_t AppMotor_getEncoderCount(DeviceEncoder_Num encoder)
 /*                      P R I V A T E  F U N C T I O N S                      */
 /******************************************************************************/
 
+static void ClearData(DeviceEncoder_Num encoder)
+{
+    MotorData[encoder].encoder.deltaCount = 0;
+    MotorData[encoder].encoder.count = 0;
+    MotorData[encoder].encoder.lastCounterValue = 0;
+
+    MotorData[encoder].rawData.velocity = 0;
+    MotorData[encoder].rawData.velocityPrev = 0;
+    MotorData[encoder].rawData.position = 0;
+    MotorData[encoder].rawData.positionPrev = 0;
+
+    MotorData[encoder].filteredData.velocity = 0;
+    MotorData[encoder].filteredData.velocityPrev = 0;
+    MotorData[encoder].filteredData.position = 0;
+    MotorData[encoder].filteredData.positionPrev = 0;
+
+    DeviceTimer_clearEncoder(encoder);
+}
+
 static void updateMotorData(DeviceEncoder_Num encoder)
 {
     // Update raw data
@@ -184,42 +227,42 @@ static void updateMotorData(DeviceEncoder_Num encoder)
     MotorData[encoder].filteredData.velocity = Lib_lpf(MotorData[encoder].rawData.velocity, MotorData[encoder].rawData.velocityPrev, MotorData[encoder].filteredData.velocityPrev, CUTOFF_HZ, SAMPLE_FREQ_HZ);
 }
 
-// From https://www.steppeschool.com/pages/blog/stm32-timer-encoder-mode
+// Using methods from: https://www.steppeschool.com/pages/blog/stm32-timer-encoder-mode
 static volatile void updateEncoderPulseCount(DeviceEncoder_Num encoder)
 {
     if (encoder < NUM_DEVICE_ENCODERS)
     {
         uint16_t temp_counter = DeviceTimer_getEncoderCount(encoder);
 
-        if (temp_counter == MotorData[encoder].encoder.last_counter_value)
+        if (temp_counter == MotorData[encoder].encoder.lastCounterValue)
         {
             MotorData[encoder].encoder.deltaCount = 0;
         }
-        else if (temp_counter > MotorData[encoder].encoder.last_counter_value)
+        else if (temp_counter > MotorData[encoder].encoder.lastCounterValue)
         {
             if (DeviceTimer_isEncoderCountingDown(encoder))
             {
-                MotorData[encoder].encoder.deltaCount = (- MotorData[encoder].encoder.last_counter_value - (DeviceTimer_getEncoderAutoReload(encoder) - temp_counter));
+                MotorData[encoder].encoder.deltaCount = (- MotorData[encoder].encoder.lastCounterValue - (DeviceTimer_getEncoderAutoReload(encoder) - temp_counter));
             }
             else
             {
-                MotorData[encoder].encoder.deltaCount = temp_counter - MotorData[encoder].encoder.last_counter_value;
+                MotorData[encoder].encoder.deltaCount = temp_counter - MotorData[encoder].encoder.lastCounterValue;
             }
         }
         else
         {
             if (DeviceTimer_isEncoderCountingDown(encoder))
             {
-                MotorData[encoder].encoder.deltaCount = temp_counter - MotorData[encoder].encoder.last_counter_value;
+                MotorData[encoder].encoder.deltaCount = temp_counter - MotorData[encoder].encoder.lastCounterValue;
             }
             else
             {
-                MotorData[encoder].encoder.deltaCount = temp_counter + (DeviceTimer_getEncoderAutoReload(encoder) - MotorData[encoder].encoder.last_counter_value);
+                MotorData[encoder].encoder.deltaCount = temp_counter + (DeviceTimer_getEncoderAutoReload(encoder) - MotorData[encoder].encoder.lastCounterValue);
             }
         }
 
         // Update counts
         MotorData[encoder].encoder.count += MotorData[encoder].encoder.deltaCount;
-        MotorData[encoder].encoder.last_counter_value = temp_counter;
+        MotorData[encoder].encoder.lastCounterValue = temp_counter;
     }
  }

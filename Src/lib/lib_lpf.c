@@ -44,7 +44,7 @@
 /*                       P U B L I C  F U N C T I O N S                       */
 /******************************************************************************/
 
-// From https://github.com/botprof/first-order-low-pass-filter
+// Reference: https://github.com/botprof/first-order-low-pass-filter
 float_t Lib_lpf(float_t x, float_t xPrev, float_t yPrev, float_t cutoff_Hz, float_t samplingFreq_Hz)
 {
     float_t omega_c = FREQ_TO_RAD_PER_S(cutoff_Hz);

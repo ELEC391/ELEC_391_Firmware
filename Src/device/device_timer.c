@@ -365,6 +365,14 @@ uint32_t DeviceTimer_getEncoderAutoReload(DeviceEncoder_Num encoder)
     return arrCount;
 }
 
+void DeviceTimer_clearEncoder(DeviceEncoder_Num encoder)
+{
+    if (encoder != NUM_DEVICE_ENCODERS)
+    {
+        __HAL_TIM_SET_COUNTER(&EncoderConfigs[encoder].timConfig, 0U);
+    }
+}
+
 void DeviceTimer_setPwmDutyCycle(DeviceTimer_Num timer, uint32_t pwmChannel, float_t dutyCycle)
 {
     bool validDuty = (dutyCycle >= 0.0f) && (dutyCycle <= 100.0f);

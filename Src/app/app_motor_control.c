@@ -13,6 +13,7 @@
 #include "app_bridge.h"
 #include "lib_pi_compensator.h"
 #include <math.h>
+#include <stdbool.h>
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -21,13 +22,13 @@
 #define CONTROLLER_FREQUENCY 1000.0F // Currently running in 1Khz ISR
 
 // Controller Gains
-#define KP 10.0F
-#define KI 0.0F
+#define KP 1.0F
+#define KI 0.5F
 
 // Controller Limits
 #define MAX_DUTY_OUTPUT 100.0F
 #define MIN_DUTY_OUTPUT -100.0F // Forward and reverse
-#define MAX_INTEGRATOR_LIMIT 1000000.0F // TODO TUNE ANTI-WINDUP
+#define MAX_INTEGRATOR_LIMIT 250.0F
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -100,10 +101,10 @@ static App_MotorControllerData ControllerData[NUM_APP_CONTROLLER] =
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
 /******************************************************************************/
 
+
 /******************************************************************************/
 /*                       P U B L I C  F U N C T I O N S                       */
 /******************************************************************************/
-
 void AppMotorControl_init(void)
 {
     // Ensure controllers are cleared out
@@ -130,6 +131,14 @@ void AppMotorControl_1kHz(void)
             // Controller disabled -- Deactivate bridge
             AppBridge_setBridge(ControllerData[i].bridge, BRIDGE_OFF, 0.0F);
         }
+    }
+}
+
+void AppMotorControl_setKp(AppMotorControl_Num contorller, float_t kp)
+{
+    if (contorller < NUM_APP_CONTROLLER)
+    {
+        ControllerData[contorller].controller.Ki = kp;
     }
 }
 

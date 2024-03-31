@@ -49,6 +49,7 @@ void Lib_PI_init(Lib_PI_Controller* controller)
     controller->out = 0.0f;
 }
 
+// Reference: https://github.com/pms67/PID
 float_t Lib_PI_updateController(Lib_PI_Controller* controller, float_t setPoint, float_t measurement)
 {
     float_t error = setPoint - measurement;

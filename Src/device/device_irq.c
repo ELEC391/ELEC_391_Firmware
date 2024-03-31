@@ -15,6 +15,7 @@
 #include "app_motor.h"
 #include "app_bridge.h"
 #include "app_motor_control.h"
+#include <stdint.h>
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -38,7 +39,7 @@ void SampleComputeLoad(void);
 /*               P R I V A T E  G L O B A L  V A R I A B L E S                */
 /******************************************************************************/
 
-// Global variables that are only used in this file (always declare static)
+static volatile uint32_t counter_ms = 0U;
 
 /******************************************************************************/
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
@@ -48,6 +49,15 @@ void SampleComputeLoad(void);
 /*                       P U B L I C  F U N C T I O N S                       */
 /******************************************************************************/
 
+volatile uint32_t DeviceIrq_getCount_ms(void)
+{
+    return counter_ms;
+}
+
+void DeviceIrq_clearCounter(void)
+{
+    counter_ms = 0U;
+}
 /******************************************************************************/
 /* STM32H5xx Peripheral Interrupt Handlers                                    */
 /* Add here the Interrupt Handlers for the used peripherals.                  */
@@ -86,6 +96,7 @@ void TIM2_IRQHandler(void)
         DeviceGpio_toggle(RED_LED_PIN);
     }
     count++;
+    counter_ms++;
 
     AppMotorControl_1kHz();
 }
