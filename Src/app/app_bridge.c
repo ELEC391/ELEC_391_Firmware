@@ -51,6 +51,13 @@ static volatile App_BridgeData BridgeRequest[NUM_APP_BRIDGE] =
         .dutyCycle = 0.0F,
         .enablePin = X_AXIS_MOTOR_ENABLE, // Not needed -- can rework this design when time permits
     },
+    [Y_AXIS_BRIDGE] =
+    {
+        .timer = Y_AXIS_PWM_TIMER,
+        .state = BRIDGE_OFF,
+        .dutyCycle = 0.0F,
+        .enablePin = Y_AXIS_MOTOR_ENABLE, // Not needed -- can rework this design when time permits
+    },
 };
 
 static volatile App_BridgeData BridgeData[NUM_APP_BRIDGE] =
@@ -62,6 +69,13 @@ static volatile App_BridgeData BridgeData[NUM_APP_BRIDGE] =
         .state = BRIDGE_OFF,
         .dutyCycle = 0.0F,
         .enablePin = X_AXIS_MOTOR_ENABLE,
+    },
+    [Y_AXIS_BRIDGE] =
+    {
+        .timer = Y_AXIS_PWM_TIMER,
+        .state = BRIDGE_OFF,
+        .dutyCycle = 0.0F,
+        .enablePin = Y_AXIS_MOTOR_ENABLE, // Not needed -- can rework this design when time permits
     },
 };
 
