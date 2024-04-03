@@ -25,6 +25,7 @@
 typedef enum AppMotorControl_Num
 {
     X_AXIS_CONTROLLER = 0U,
+    Y_AXIS_CONTROLLER,
     NUM_APP_CONTROLLER
 } AppMotorControl_Num;
 

@@ -74,10 +74,34 @@ static App_MotorControllerData ControllerData[NUM_APP_CONTROLLER] =
         .requestedSetPoint = 0.0F,
         .controllerEnabled = false,
     },
+    [Y_AXIS_CONTROLLER] =
+    {
+        .controller =
+        {
+            .Kp = KP,
+            .Ki = KI,
+            .limMax = MAX_DUTY_OUTPUT,
+            .limMin = MIN_DUTY_OUTPUT,
+            .limMaxInt = MAX_INTEGRATOR_LIMIT,
+            .limMinInt = - MAX_INTEGRATOR_LIMIT,
+            .T = (1.0F / CONTROLLER_FREQUENCY),
+            .integrator = 0.0F,
+            .prevError = 0.0F,
+            .out = 0.0F
+        },
+        .bridge = Y_AXIS_BRIDGE,
+        .encoder = Y_AXIS_ENCODER,
+        .requestedSetPoint = 0.0F,
+        .controllerEnabled = false,
+    },
 };
 
 /******************************************************************************/
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
+/******************************************************************************/
+
+/******************************************************************************/
+/*                       P U B L I C  F U N C T I O N S                       */
 /******************************************************************************/
 
 void AppMotorControl_init(void)
@@ -108,10 +132,6 @@ void AppMotorControl_1kHz(void)
         }
     }
 }
-
-/******************************************************************************/
-/*                       P U B L I C  F U N C T I O N S                       */
-/******************************************************************************/
 
 void AppMotorControl_requestSetPoint(AppMotorControl_Num contorller, float_t setPointRequest)
 {
