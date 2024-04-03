@@ -26,6 +26,7 @@
 typedef enum AppBridge_Num
 {
     X_AXIS_BRIDGE = 0U,
+    Y_AXIS_BRIDGE,
     NUM_APP_BRIDGE
 } AppBridge_Num;
 

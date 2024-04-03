@@ -86,11 +86,9 @@ int main(void)
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
     uint16_t count = 0;
-    uint16_t count2 = 0;
-    float_t setpoint = 90.0F;
-    AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, setpoint);
-    HAL_Delay(2000);
-    AppMotorControl_configureController(X_AXIS_CONTROLLER, true);
+    uint16_t count2 = 0U;
+    bool dir = true;
+    AppMotorControl_configureController(X_AXIS_CONTROLLER, false);
 
 
     // Main loop
@@ -105,29 +103,26 @@ int main(void)
         HAL_Delay(100);
         DeviceGpio_toggle(GREEN_LED_PIN);
 
-        if ((count >= 2U))
+        if ((count >= 10) && (count2 < 51))
         {
-            if (setpoint > 0.0F)
+            dir = !dir;
+            count = 0U;
+
+            if (dir)
             {
-                setpoint = 0.0F;
+                AppBridge_setBridge(Y_AXIS_BRIDGE, BRIDGE_FORWARD, 50.0F);
             }
             else
             {
-                setpoint = 90.0F;
+                AppBridge_setBridge(Y_AXIS_BRIDGE, BRIDGE_REVERSE, 50.0F);
             }
-            count = 0U;
-        }
-        count++;
-        count2++;
-        if (count2 > 60U)
-        {
-            AppMotorControl_configureController(X_AXIS_CONTROLLER, false);
-
         }
         else
         {
-            AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, setpoint);
+            AppBridge_setBridge(Y_AXIS_BRIDGE, BRIDGE_OFF, 50.0F);
         }
+        count++;
+        count2++;
     }
 }
 

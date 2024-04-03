@@ -27,6 +27,7 @@ typedef enum DeviceTimer_Num
     MAIN_CONTROL_TIMER = 0,
     SIGNAL_FILTER_TIMER,
     X_AXIS_PWM_TIMER,
+    Y_AXIS_PWM_TIMER,
     NUM_DEVICE_TIMERS
 } DeviceTimer_Num;
 typedef enum DeviceEncoder_Num

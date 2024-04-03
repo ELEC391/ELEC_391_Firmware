@@ -25,7 +25,6 @@
 typedef struct PwmConfig
 {
     TIM_OC_InitTypeDef config;
-    TIM_BreakDeadTimeConfigTypeDef advancedConfig; // for advanced control timers
 
     // For our use case we have separate timers for each bridge with only two channels per bridge
     uint32_t channelA; // Forward direction
@@ -36,7 +35,6 @@ typedef struct TimerConfig
 {
     bool configureIrq;
     bool configurePwm;
-    bool configureAdvancePwm;
     TIM_HandleTypeDef timConfig;
     TIM_ClockConfigTypeDef clockConfig;
     TIM_MasterConfigTypeDef masterConfig;
@@ -66,7 +64,6 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
     {
         .configureIrq = true,
         .configurePwm = false,
-        .configureAdvancePwm = false,
         .timConfig =
         {
             .Instance = TIM2,
@@ -92,7 +89,6 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
     {
         .configureIrq = true,
         .configurePwm = false,
-        .configureAdvancePwm = false,
         .timConfig =
         {
             .Instance = TIM3,
@@ -117,7 +113,6 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
     {
         .configureIrq = false,
         .configurePwm = true,
-        .configureAdvancePwm = true,
         .timConfig =
         {
             .Instance = TIM1,
@@ -150,23 +145,44 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
                 .OCIdleState = TIM_OCIDLESTATE_RESET,
                 .OCNIdleState = TIM_OCNIDLESTATE_RESET
             },
-            .advancedConfig =
-            {
-                // Not actually used but configured to be explicitly clear
-                .OffStateRunMode = TIM_OSSR_DISABLE,
-                .OffStateIDLEMode = TIM_OSSI_DISABLE,
-                .LockLevel = TIM_LOCKLEVEL_OFF,
-                .DeadTime = 0,
-                .BreakState = TIM_BREAK_DISABLE,
-                .BreakPolarity = TIM_BREAKPOLARITY_HIGH,
-                .BreakFilter = 0,
-                .Break2State = TIM_BREAK2_DISABLE,
-                .Break2Polarity = TIM_BREAK2POLARITY_HIGH,
-                .Break2Filter = 0,
-                .AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE,
-            },
             .channelA = TIM_CHANNEL_2,
             .channelB = TIM_CHANNEL_4,
+        },
+    },
+    [Y_AXIS_PWM_TIMER] =
+    {
+        .configureIrq = false,
+        .configurePwm = true,
+        .timConfig =
+        {
+            .Instance = TIM5,
+            .Init.Prescaler = 0,
+            .Init.CounterMode = TIM_COUNTERMODE_UP,
+            .Init.Period = PWM_ARR_COUNT,
+            .Init.ClockDivision = TIM_CLOCKDIVISION_DIV1,
+            .Init.RepetitionCounter = 0,
+            .Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE,
+        },
+        .clockConfig =
+        {
+            .ClockSource = TIM_CLOCKSOURCE_INTERNAL,
+        },
+        .masterConfig =
+        {
+            .MasterOutputTrigger = TIM_TRGO_RESET,
+            .MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE
+        },
+        .pwmConfig =
+        {
+            .config =
+            {
+                .OCMode = TIM_OCMODE_PWM1,
+                .Pulse = 0, // Init to have 0% Duty on start
+                .OCPolarity = TIM_OCPOLARITY_HIGH,
+                .OCFastMode = TIM_OCFAST_DISABLE,
+            },
+            .channelA = TIM_CHANNEL_4,
+            .channelB = TIM_CHANNEL_1,
         },
     }
 };
@@ -256,12 +272,6 @@ void DeviceTimer_init(void)
         {
             configRet |= HAL_TIM_PWM_ConfigChannel(&TimerConfigs[i].timConfig, &TimerConfigs[i].pwmConfig.config, TimerConfigs[i].pwmConfig.channelA);
             configRet |= HAL_TIM_PWM_ConfigChannel(&TimerConfigs[i].timConfig, &TimerConfigs[i].pwmConfig.config, TimerConfigs[i].pwmConfig.channelB);
-
-            // if (TimerConfigs[i].configureAdvancePwm)
-            // {
-            //     configRet |= HAL_TIM_PWM_ConfigChannel(&TimerConfigs[i].timConfig, &TimerConfigs[i].pwmConfig.config, TimerConfigs[i].pwmConfig.channelA);
-            // }
-            // Seems like the HAL calls above don't automatically have this callback
             pwmPostInit(&TimerConfigs[i].timConfig); // Configures PWM Pin outputs
         }
 
@@ -289,6 +299,9 @@ void DeviceTimer_startAllPwmChannels(void)
 {
     HAL_TIM_PWM_Start(&TimerConfigs[X_AXIS_PWM_TIMER].timConfig, TimerConfigs[X_AXIS_PWM_TIMER].pwmConfig.channelA);
     HAL_TIM_PWM_Start(&TimerConfigs[X_AXIS_PWM_TIMER].timConfig, TimerConfigs[X_AXIS_PWM_TIMER].pwmConfig.channelB);
+
+    HAL_TIM_PWM_Start(&TimerConfigs[Y_AXIS_PWM_TIMER].timConfig, TimerConfigs[Y_AXIS_PWM_TIMER].pwmConfig.channelA);
+    HAL_TIM_PWM_Start(&TimerConfigs[Y_AXIS_PWM_TIMER].timConfig, TimerConfigs[Y_AXIS_PWM_TIMER].pwmConfig.channelB);
 }
 
 void DeviceTimer_startIrq(DeviceTimer_Num timer)
@@ -412,6 +425,20 @@ static void pwmPostInit(TIM_HandleTypeDef* timHandle)
         GPIO_InitStruct.Alternate = GPIO_AF1_TIM1;
         HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
     }
+    else if(timHandle->Instance==TIM5)
+    {
+        __HAL_RCC_GPIOA_CLK_ENABLE();
+        /**TIM5 GPIO Configuration
+        PA0     ------> TIM5_CH1
+        PA3     ------> TIM5_CH4
+        */
+        GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_3;
+        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+        GPIO_InitStruct.Pull = GPIO_NOPULL;
+        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+        GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
+        HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    }
 }
 
 /******************************************************************************/
@@ -496,7 +523,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
         /* Peripheral clock disable */
         __HAL_RCC_TIM1_CLK_ENABLE();
     }
-    if (tim_baseHandle->Instance==TIM2)
+    else if (tim_baseHandle->Instance==TIM2)
     {
         __HAL_RCC_TIM2_CLK_ENABLE();
         HAL_NVIC_SetPriority(TIM2_IRQn, 0, 1); // One sub priority below Signal filter
@@ -508,6 +535,11 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
         HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0); // Highest priority
         HAL_NVIC_EnableIRQ(TIM3_IRQn);
     }
+      else if(tim_baseHandle->Instance==TIM5)
+    {
+        /* TIM5 clock enable */
+        __HAL_RCC_TIM5_CLK_ENABLE();
+    }
 }
 
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
@@ -517,7 +549,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
         /* Peripheral clock disable */
         __HAL_RCC_TIM1_CLK_DISABLE();
     }
-    if (tim_baseHandle->Instance==TIM2)
+    else if (tim_baseHandle->Instance==TIM2)
     {
         __HAL_RCC_TIM2_CLK_DISABLE();
         HAL_NVIC_DisableIRQ(TIM2_IRQn);
@@ -526,5 +558,10 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
     {
         __HAL_RCC_TIM3_CLK_DISABLE();
         HAL_NVIC_DisableIRQ(TIM3_IRQn);
+    }
+    else if(tim_baseHandle->Instance==TIM5)
+    {
+        /* Peripheral clock disable */
+        __HAL_RCC_TIM5_CLK_DISABLE();
     }
 }
