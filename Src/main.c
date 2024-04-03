@@ -78,26 +78,27 @@ int main(void)
     sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position\r\n");
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
-    velocity = AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
-    position = AppMotor_getPosition_Raw(X_AXIS_ENCODER);
-    filtVel =  AppMotor_getVelocity_10kHz(X_AXIS_ENCODER);
-    filtPos =  AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
+    velocity = AppMotor_getVelocity_Raw(Y_AXIS_ENCODER);
+    position = AppMotor_getPosition_Raw(Y_AXIS_ENCODER);
+    filtVel =  AppMotor_getVelocity_10kHz(Y_AXIS_ENCODER);
+    filtPos =  AppMotor_getPosition_10kHz(Y_AXIS_ENCODER);
     sprintf(aTxMessage, "%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos);
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
     uint16_t count = 0;
     uint16_t count2 = 0U;
     bool dir = true;
-    AppMotorControl_configureController(X_AXIS_CONTROLLER, false);
-
+    float_t setpoint = 0.0F;
+    AppMotorControl_configureController(Y_AXIS_CONTROLLER, true);
+    AppMotorControl_requestSetPoint(Y_AXIS_CONTROLLER, setpoint);
 
     // Main loop
     while (1)
     {
-        velocity = AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
-        position = AppMotor_getPosition_Raw(X_AXIS_ENCODER);
-        filtVel =  AppMotor_getVelocity_10kHz(X_AXIS_ENCODER);
-        filtPos =  AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
+        velocity = AppMotor_getVelocity_Raw(Y_AXIS_ENCODER);
+        position = AppMotor_getPosition_Raw(Y_AXIS_ENCODER);
+        filtVel =  AppMotor_getVelocity_10kHz(Y_AXIS_ENCODER);
+        filtPos =  AppMotor_getPosition_10kHz(Y_AXIS_ENCODER);
         sprintf(aTxMessage, "%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos);
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
         HAL_Delay(100);
@@ -111,10 +112,12 @@ int main(void)
             if (dir)
             {
                 AppBridge_setBridge(Y_AXIS_BRIDGE, BRIDGE_FORWARD, 50.0F);
+                setpoint = 0.0F;
             }
             else
             {
                 AppBridge_setBridge(Y_AXIS_BRIDGE, BRIDGE_REVERSE, 50.0F);
+                setpoint = 90.0F;
             }
         }
         else
@@ -123,6 +126,8 @@ int main(void)
         }
         count++;
         count2++;
+        AppMotorControl_requestSetPoint(Y_AXIS_CONTROLLER, setpoint);
+
     }
 }
 
