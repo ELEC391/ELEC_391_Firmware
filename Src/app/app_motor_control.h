@@ -42,6 +42,7 @@ typedef enum AppMotorControl_Num
 
 void AppMotorControl_init(void);
 void AppMotorControl_1kHz(void);
+void AppMotorControl_setKp(AppMotorControl_Num contorller, float_t kp);
 void AppMotorControl_requestSetPoint(AppMotorControl_Num contorller, float_t setPointRequest);
 void AppMotorControl_configureController(AppMotorControl_Num contorller, bool controllerEnabled);
 

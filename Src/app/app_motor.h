@@ -36,6 +36,7 @@
 
 void AppMotor_10kHz(void);
 void AppMotor_init(void);
+void AppMotor_reinitializeData(void);
 float_t AppMotor_getVelocity_Raw(DeviceEncoder_Num encoder);
 float_t AppMotor_getPosition_Raw(DeviceEncoder_Num encoder);
 float_t AppMotor_getVelocity_10kHz(DeviceEncoder_Num encoder);

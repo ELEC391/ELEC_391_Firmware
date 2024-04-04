@@ -91,6 +91,13 @@ void DeviceTimer_setPwmDutyCycle(DeviceTimer_Num timer, uint32_t pwmChannel, flo
 void DeviceTimer_startEncoder(DeviceEncoder_Num encoder);
 
 /**
+ * @brief Will clear timer counter for encoder
+ *
+ * @param encoder Enum value for desired encoder
+ */
+void DeviceTimer_clearEncoder(DeviceEncoder_Num encoder);
+
+/**
  * @brief Return count of request encoder
  *
  * @param encoder Enum value for desired encoder
