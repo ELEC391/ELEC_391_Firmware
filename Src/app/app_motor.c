@@ -100,19 +100,11 @@ void AppMotor_init(void)
 
 void AppMotor_10kHz(void)
 {
-    static uint32_t clearDataDelay = 0U;
     if (clearData)
     {
         ClearData(X_AXIS_ENCODER);
         ClearData(Y_AXIS_ENCODER);
-        clearDataDelay++;
-
-        // 50ms wait after clearing
-        if (clearDataDelay > 500U)
-        {
-            clearData = false;
-            clearDataDelay = 0U;
-        }
+        clearData = false;
     }
     else
     {

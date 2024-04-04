@@ -34,9 +34,7 @@
 
 static void SystemClock_Config(void);
 static void enableCache(void);
-
-// static void MX_USART3_UART_Init(void);
-
+static void startExternalPushButtonIrq(void);
 
 /******************************************************************************/
 /*               P R I V A T E  G L O B A L  V A R I A B L E S                */
@@ -74,6 +72,7 @@ void DeviceConfig_init(void)
     DeviceTimer_startAllPwmChannels();
     DeviceTimer_startIrq(MAIN_CONTROL_TIMER);
     DeviceTimer_startIrq(SIGNAL_FILTER_TIMER);
+    startExternalPushButtonIrq();
 }
 
 /******************************************************************************/
@@ -149,4 +148,11 @@ static void enableCache(void)
     // Enable I and D cache
     SCB_EnableICache();
     SCB_EnableDCache();
+}
+
+static void startExternalPushButtonIrq(void)
+{
+    // Enable External IRQ for push-button at lowest priority 
+    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 3, 0);
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }

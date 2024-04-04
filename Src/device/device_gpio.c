@@ -121,7 +121,7 @@ static GpioConfig gpioConfig[NUM_GPIO_PINS] =
         .gpioInitConfig =
         {
             .Pin = GPIO_PIN_13,
-            .Mode = GPIO_MODE_INPUT,
+            .Mode = GPIO_MODE_IT_FALLING,
             .Pull = GPIO_NOPULL
         }
     }

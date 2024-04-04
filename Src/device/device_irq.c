@@ -15,7 +15,6 @@
 #include "app_motor.h"
 #include "app_bridge.h"
 #include "app_motor_control.h"
-#include <stdint.h>
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -33,7 +32,7 @@
 /*            P R I V A T E  F U N C T I O N  P R O T O T Y P E S             */
 /******************************************************************************/
 
-void SampleComputeLoad(void);
+static void pushButtonHomingCallback(void);
 
 /******************************************************************************/
 /*               P R I V A T E  G L O B A L  V A R I A B L E S                */
@@ -101,8 +100,33 @@ void TIM2_IRQHandler(void)
     AppMotorControl_1kHz();
 }
 
-// TODO Determine if these auto Gen functions are required
-/* Cortex Processor Interruption and Exception Handlers */
+void EXTI15_10_IRQHandler(void)
+{
+    // Only handle IRQ on push button pin
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
+    pushButtonHomingCallback();
+}
+
+/******************************************************************************/
+/*                      P R I V A T E  F U N C T I O N S                      */
+/******************************************************************************/
+
+static void pushButtonHomingCallback(void)
+{
+    AppMotor_reinitializeData();
+    // static bool homingComplete = false;
+
+    // if (!homingComplete)
+    // {
+    //     homingComplete = true;
+    //     AppMotor_reinitializeData();
+    // }
+}
+
+/******************************************************************************/
+/*                  Cortex-M7 Processor Exceptions Handlers                   */
+/******************************************************************************/
+
 /**
   * @brief This function handles Non maskable interrupt.
   */
@@ -184,20 +208,4 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
     HAL_IncTick();
-}
-
-/******************************************************************************/
-/*                      P R I V A T E  F U N C T I O N S                      */
-/******************************************************************************/
-
-void SampleComputeLoad(void)
-{
-    float_t x = 1234.5678f;
-    float_t avg = 0.0f;
-    uint8_t count = 50U;
-    for(uint8_t i = 0U; i < count; i++)
-    {
-        avg += (float_t) i * x;
-    }
-    avg = avg / ((float_t) count);
 }
