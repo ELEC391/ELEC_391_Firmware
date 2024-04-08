@@ -47,7 +47,7 @@ typedef enum AppBridge_State
 /******************************************************************************/
 
 void AppBridge_init(void);
-void AppBridge_10kHz(void);
+void AppBridge_50kHz(void);
 void AppBridge_setBridge(AppBridge_Num bridge, AppBridge_State state, float_t dutyCycle);
 
 /******************************************************************************/

@@ -8,8 +8,6 @@
 /******************************************************************************/
 
 #include "main.h"
-#include "app/app_bridge.h"
-#include "device/device_gpio.h"
 #include "device_timer.h"
 #include "device_irq.h"
 #include "device_config.h"
@@ -75,44 +73,35 @@ int main(void)
     float_t position = 0;
     float_t filtVel = 0;
     float_t filtPos = 0;
-    float_t duty = 0.0F;
     uint32_t timer = 0U;
     uint32_t count = 0U;
+    float_t setpoint = 0.0F;
 
     char aTxMessage[100];
 
-    sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position,duty,timerCount\r\n");
-    AppMotorControl_configureController(X_AXIS_CONTROLLER, false);
+    sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position,setpoint,timerCount\r\n");
+    AppMotorControl_configureController(X_AXIS_CONTROLLER, true);
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-    // AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, setpoint);
+    AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, setpoint);
 
 
     // Main loop
     while (1)
     {
-        DeviceGpio_disable(GREEN_LED_PIN);
-
-        AppBridge_setBridge(X_AXIS_BRIDGE,BRIDGE_FORWARD, duty);
-
-        while (count < 500)
+        HAL_Delay(1);
+        if(count > 50U)
         {
-            HAL_Delay(1);
-            timer = DeviceIrq_getCount_ms();
-            velocity = AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
-            position = AppMotor_getPosition_Raw(X_AXIS_ENCODER);
-            filtVel =  AppMotor_getVelocity_10kHz(X_AXIS_ENCODER);
-            filtPos =  AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
-            sprintf(aTxMessage, "%d,%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)duty,(int)timer);
-            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-            count++;
+            setpoint = 20.0F;
+            AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, setpoint);
         }
-        count = 0U;
-        DeviceGpio_enable(GREEN_LED_PIN);
-        AppBridge_setBridge(X_AXIS_BRIDGE,BRIDGE_STOP, duty);
-
-        HAL_Delay(1500);
-        duty = duty + 5;
-
+        timer = DeviceIrq_getCount_ms();
+        velocity = AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
+        position = AppMotor_getPosition_Raw(X_AXIS_ENCODER);
+        filtVel =  AppMotor_getVelocity_50kHz(X_AXIS_ENCODER);
+        filtPos =  AppMotor_getPosition_50kHz(X_AXIS_ENCODER);
+        sprintf(aTxMessage, "%d,%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)setpoint,(int)timer);
+        DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        count++;
 
         // sprintf(aTxMessage, "**************************** Y AXIS ****************************\r\n");
         // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);

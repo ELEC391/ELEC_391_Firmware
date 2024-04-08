@@ -21,8 +21,8 @@
 #define DEGREE_PER_ROTATION 360
 
 // Filter Defines
-#define SAMPLE_FREQ_HZ 10000
-#define CUTOFF_HZ 150
+#define SAMPLE_FREQ_HZ 50000
+#define CUTOFF_HZ 500
 #define SEC_PER_MIN 60
 
 /******************************************************************************/
@@ -98,7 +98,7 @@ void AppMotor_init(void)
     updateEncoderPulseCount(Y_AXIS_ENCODER);
 }
 
-void AppMotor_10kHz(void)
+void AppMotor_50kHz(void)
 {
     if (clearData)
     {
@@ -141,7 +141,7 @@ float_t AppMotor_getPosition_Raw(DeviceEncoder_Num encoder)
     return ret;
 }
 
-float_t AppMotor_getVelocity_10kHz(DeviceEncoder_Num encoder)
+float_t AppMotor_getVelocity_50kHz(DeviceEncoder_Num encoder)
 {
     float_t ret = 0;
     if (encoder < NUM_DEVICE_ENCODERS)
@@ -151,7 +151,7 @@ float_t AppMotor_getVelocity_10kHz(DeviceEncoder_Num encoder)
     return ret;
 }
 
-float_t AppMotor_getPosition_10kHz(DeviceEncoder_Num encoder)
+float_t AppMotor_getPosition_50kHz(DeviceEncoder_Num encoder)
 {
     float_t ret = 0;
     if (encoder < NUM_DEVICE_ENCODERS)
