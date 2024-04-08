@@ -69,17 +69,21 @@ void TIM3_IRQHandler(void)
 
     // Handle IRQ
     DeviceTimer_handleIrq(SIGNAL_FILTER_TIMER);
+    DeviceGpio_toggle(DEBUG_PIN_D65);
+    // DeviceGpio_enable(DEBUG_PIN_D64);
 
     // Blinky Timing
-    if (count >= 10000U)
+    if (count >= 50000U)
     {
         count = 0;
         DeviceGpio_toggle(YELLOW_LED_PIN);
     }
     count++;
 
-    AppBridge_10kHz();
-    AppMotor_10kHz();
+    AppBridge_50kHz();
+    AppMotor_50kHz();
+    // DeviceGpio_disable(DEBUG_PIN_D64);
+
 }
 
 void TIM2_IRQHandler(void)
@@ -87,9 +91,9 @@ void TIM2_IRQHandler(void)
     static uint16_t count = 0;
     // Handle IRQ
     DeviceTimer_handleIrq(MAIN_CONTROL_TIMER);
-
+    DeviceGpio_toggle(DEBUG_PIN_D64);
     // Blinky Timing
-    if (count >= 500U)
+    if (count >= 5000U)
     {
         count = 0;
         DeviceGpio_toggle(RED_LED_PIN);
@@ -97,7 +101,7 @@ void TIM2_IRQHandler(void)
     count++;
     counter_ms++;
 
-    AppMotorControl_1kHz();
+    AppMotorControl_10kHz();
 }
 
 void EXTI15_10_IRQHandler(void)

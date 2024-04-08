@@ -19,16 +19,21 @@
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-#define CONTROLLER_FREQUENCY 1000.0F // Currently running in 1Khz ISR
+#define CONTROLLER_FREQUENCY 10000.0F // Currently running in 1Khz ISR
 
 // Controller Gains
-#define KP 1.0F
+#define KP 10.0F
 #define KI 0.5F
 
 // Controller Limits
 #define MAX_DUTY_OUTPUT 100.0F
 #define MIN_DUTY_OUTPUT -100.0F // Forward and reverse
 #define MAX_INTEGRATOR_LIMIT 250.0F
+
+// Motor Start issues
+#define MIN_VELOCITY_MOTOR_START 5.0F
+#define MIN_CONTROLLER_REQUEST_MOTOR_START 5.0F
+#define MIN_DUTY_MOTOR_START 25.0F
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -114,22 +119,35 @@ void AppMotorControl_init(void)
     }
 }
 
-void AppMotorControl_1kHz(void)
+void AppMotorControl_10kHz(void)
 {
     // Ensure controllers are cleared out
     for (AppMotorControl_Num i = 0U; i < NUM_APP_CONTROLLER; i++)
     {
         if (ControllerData[i].controllerEnabled)
         {
-            float_t currPos = AppMotor_getPosition_10kHz(ControllerData[i].encoder);
+            float_t currPos = AppMotor_getPosition_50kHz(ControllerData[i].encoder);
+            float_t currVel = AppMotor_getVelocity_50kHz(ControllerData[i].encoder);
             float_t setPoint = ControllerData[i].requestedSetPoint;
             Lib_PI_updateController(&ControllerData[i].controller, setPoint, currPos);
-            sendBridgeRequest(ControllerData[i].controller.out, ControllerData[i].bridge);
+
+
+            if ((fabs(currVel) < MIN_VELOCITY_MOTOR_START) && (fabs(ControllerData[i].controller.out) <= MIN_CONTROLLER_REQUEST_MOTOR_START))
+            {
+                float_t out = saturate(ControllerData[i].controller.out, MAX_DUTY_OUTPUT, MIN_DUTY_MOTOR_START);
+                sendBridgeRequest(out, ControllerData[i].bridge);
+            }
+            else
+            {
+                sendBridgeRequest(ControllerData[i].controller.out, ControllerData[i].bridge);
+            }
+            // sendBridgeRequest(ControllerData[i].controller.out, ControllerData[i].bridge);
+
         }
         else
         {
-            // Controller disabled -- Deactivate bridge
-            AppBridge_setBridge(ControllerData[i].bridge, BRIDGE_OFF, 0.0F);
+            // Controller disabled -- No Bridge Request Sent
+            // AppBridge_setBridge(ControllerData[i].bridge, BRIDGE_OFF, 0.0F);
         }
     }
 }

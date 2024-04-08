@@ -98,7 +98,7 @@ void AppBridge_init(void)
     }
 }
 
-void AppBridge_10kHz(void)
+void AppBridge_50kHz(void)
 {
     for (AppBridge_Num i = 0U; i < NUM_APP_BRIDGE; i++)
     {

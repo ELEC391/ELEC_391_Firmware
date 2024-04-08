@@ -16,6 +16,8 @@
 #include "app_motor.h"
 #include "app_bridge.h"
 #include "app_motor_control.h"
+#include <math.h>
+#include <stdint.h>
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -72,36 +74,44 @@ int main(void)
     float_t filtVel = 0;
     float_t filtPos = 0;
     uint32_t timer = 0U;
+    uint32_t count = 0U;
+    float_t setpoint = 0.0F;
 
     char aTxMessage[100];
 
-    sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position,timerCount\r\n");
+    sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position,setpoint,timerCount\r\n");
+    AppMotorControl_configureController(X_AXIS_CONTROLLER, true);
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+    AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, setpoint);
 
 
     // Main loop
     while (1)
     {
-        HAL_Delay(1000);
-        sprintf(aTxMessage, "**************************** X AXIS ****************************\r\n");
-        DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        HAL_Delay(1);
+        if(count > 50U)
+        {
+            setpoint = 20.0F;
+            AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, setpoint);
+        }
         timer = DeviceIrq_getCount_ms();
         velocity = AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
         position = AppMotor_getPosition_Raw(X_AXIS_ENCODER);
-        filtVel =  AppMotor_getVelocity_10kHz(X_AXIS_ENCODER);
-        filtPos =  AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
-        sprintf(aTxMessage, "%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)timer);
+        filtVel =  AppMotor_getVelocity_50kHz(X_AXIS_ENCODER);
+        filtPos =  AppMotor_getPosition_50kHz(X_AXIS_ENCODER);
+        sprintf(aTxMessage, "%d,%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)setpoint,(int)timer);
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        count++;
 
-        sprintf(aTxMessage, "**************************** Y AXIS ****************************\r\n");
-        DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-        timer = DeviceIrq_getCount_ms();
-        velocity = AppMotor_getVelocity_Raw(Y_AXIS_ENCODER);
-        position = AppMotor_getPosition_Raw(Y_AXIS_ENCODER);
-        filtVel =  AppMotor_getVelocity_10kHz(Y_AXIS_ENCODER);
-        filtPos =  AppMotor_getPosition_10kHz(Y_AXIS_ENCODER);
-        sprintf(aTxMessage, "%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)timer);
-        DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        // sprintf(aTxMessage, "**************************** Y AXIS ****************************\r\n");
+        // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        // timer = DeviceIrq_getCount_ms();
+        // velocity = AppMotor_getVelocity_Raw(Y_AXIS_ENCODER);
+        // position = AppMotor_getPosition_Raw(Y_AXIS_ENCODER);
+        // filtVel =  AppMotor_getVelocity_10kHz(Y_AXIS_ENCODER);
+        // filtPos =  AppMotor_getPosition_10kHz(Y_AXIS_ENCODER);
+        // sprintf(aTxMessage, "%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)timer);
+        // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
     }
 }
