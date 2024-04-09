@@ -16,6 +16,8 @@
 #include "app_motor.h"
 #include "app_bridge.h"
 #include "app_motor_control.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -44,7 +46,7 @@ void Error_Handler(void)
     while(1)
     {
         HAL_Delay(100);
-        DeviceGpio_toggle(RED_LED_PIN);
+        DeviceGpio_enable(TEST_LED_A_PIN);
     }
 }
 
@@ -72,8 +74,14 @@ int main(void)
     float_t filtVel = 0;
     float_t filtPos = 0;
     uint32_t timer = 0U;
+    uint32_t count = 0U;
+    bool dir = false;
 
     char aTxMessage[100];
+
+    AppMotorControl_configureController(Y_AXIS_CONTROLLER, false);
+    AppMotorControl_configureController(X_AXIS_CONTROLLER, false);
+
 
     sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position,timerCount\r\n");
     DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
@@ -82,7 +90,31 @@ int main(void)
     // Main loop
     while (1)
     {
-        HAL_Delay(1000);
+        HAL_Delay(2000);
+        DeviceGpio_toggle(TEST_LED_A_PIN);
+        DeviceGpio_toggle(LASER_ENABLE_PIN);
+
+
+        if (count >= 10)
+        {
+            DeviceGpio_toggle(TEST_LED_B_PIN);
+
+
+
+            if (dir)
+            {
+                AppBridge_setBridge(X_AXIS_BRIDGE, BRIDGE_FORWARD, 50.0);
+                AppBridge_setBridge(Y_AXIS_BRIDGE, BRIDGE_FORWARD, 50.0);
+            }
+            else
+            {
+                AppBridge_setBridge(X_AXIS_BRIDGE, BRIDGE_REVERSE, 50.0);
+                AppBridge_setBridge(Y_AXIS_BRIDGE, BRIDGE_REVERSE, 50.0);
+            }
+            count = 0;
+            dir = !dir;
+        }
+
         sprintf(aTxMessage, "**************************** X AXIS ****************************\r\n");
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
         timer = DeviceIrq_getCount_ms();
@@ -103,6 +135,7 @@ int main(void)
         sprintf(aTxMessage, "%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)timer);
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
+        count++;
     }
 }
 

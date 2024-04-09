@@ -38,7 +38,7 @@ typedef struct GpioConfig
 
 static GpioConfig gpioConfig[NUM_GPIO_PINS] =
 {
-    [RED_LED_PIN] =
+    [TEST_LED_A_PIN] =
     {
         .gpioPort = GPIOB,
         .gpioInitConfig =
@@ -49,18 +49,7 @@ static GpioConfig gpioConfig[NUM_GPIO_PINS] =
             .Speed = GPIO_SPEED_FREQ_LOW,
         }
     },
-    [YELLOW_LED_PIN] =
-    {
-        .gpioPort = GPIOE,
-        .gpioInitConfig =
-        {
-            .Pin = GPIO_PIN_1,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GREEN_LED_PIN] =
+    [TEST_LED_B_PIN] =
     {
         .gpioPort = GPIOB,
         .gpioInitConfig =
@@ -71,31 +60,9 @@ static GpioConfig gpioConfig[NUM_GPIO_PINS] =
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [X_AXIS_MOTOR_ENABLE] =
+    [LASER_ENABLE_PIN] =
     {
-        .gpioPort = GPIOG,
-        .gpioInitConfig =
-        {
-            .Pin = GPIO_PIN_14,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW,
-        }
-    },
-    [Y_AXIS_MOTOR_ENABLE] =
-    {
-        .gpioPort = GPIOC,
-        .gpioInitConfig =
-        {
-            .Pin = GPIO_PIN_2,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [DEBUG_PIN_D64] =
-    {
-        .gpioPort = GPIOG,
+        .gpioPort = GPIOA,
         .gpioInitConfig =
         {
             .Pin = GPIO_PIN_1,
@@ -104,18 +71,7 @@ static GpioConfig gpioConfig[NUM_GPIO_PINS] =
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [DEBUG_PIN_D65] =
-    {
-        .gpioPort = GPIOG,
-        .gpioInitConfig =
-        {
-            .Pin = GPIO_PIN_0,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [BLUE_BUTTON_PIN] =
+    [TEST_BUTTON_PIN] =
     {
         .gpioPort = GPIOC,
         .gpioInitConfig =

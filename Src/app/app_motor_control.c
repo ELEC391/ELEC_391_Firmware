@@ -128,8 +128,7 @@ void AppMotorControl_1kHz(void)
         }
         else
         {
-            // Controller disabled -- Deactivate bridge
-            AppBridge_setBridge(ControllerData[i].bridge, BRIDGE_OFF, 0.0F);
+            // Controller disabled -- No Bridge Commands Sent
         }
     }
 }
