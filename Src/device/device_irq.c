@@ -74,7 +74,7 @@ void TIM3_IRQHandler(void)
     if (count >= 10000U)
     {
         count = 0;
-        DeviceGpio_toggle(YELLOW_LED_PIN);
+        // DeviceGpio_toggle(TEST_LED_B_PIN);
     }
     count++;
 
@@ -92,7 +92,7 @@ void TIM2_IRQHandler(void)
     if (count >= 500U)
     {
         count = 0;
-        DeviceGpio_toggle(RED_LED_PIN);
+        // DeviceGpio_toggle(TEST_LED_A_PIN);
     }
     count++;
     counter_ms++;

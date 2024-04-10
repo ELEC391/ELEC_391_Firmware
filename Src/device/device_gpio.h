@@ -24,14 +24,10 @@
 
 typedef enum DeviceGpio_Pin
 {
-    RED_LED_PIN = 0,
-    YELLOW_LED_PIN,
-    GREEN_LED_PIN,
-    X_AXIS_MOTOR_ENABLE,
-    Y_AXIS_MOTOR_ENABLE,
-    DEBUG_PIN_D64,
-    DEBUG_PIN_D65,
-    BLUE_BUTTON_PIN,
+    TEST_LED_A_PIN = 0,
+    TEST_LED_B_PIN,
+    LASER_ENABLE_PIN,
+    TEST_BUTTON_PIN,
     NUM_GPIO_PINS
 }DeviceGpio_Pin;
 

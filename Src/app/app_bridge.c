@@ -27,7 +27,6 @@ typedef struct{
     DeviceTimer_Num timer;
     AppBridge_State state;
     float_t dutyCycle;
-    DeviceGpio_Pin enablePin;
 }App_BridgeData;
 
 /******************************************************************************/
@@ -49,14 +48,12 @@ static volatile App_BridgeData BridgeRequest[NUM_APP_BRIDGE] =
         .timer = X_AXIS_PWM_TIMER,
         .state = BRIDGE_OFF,
         .dutyCycle = 0.0F,
-        .enablePin = X_AXIS_MOTOR_ENABLE, // Not needed -- can rework this design when time permits
     },
     [Y_AXIS_BRIDGE] =
     {
         .timer = Y_AXIS_PWM_TIMER,
         .state = BRIDGE_OFF,
         .dutyCycle = 0.0F,
-        .enablePin = Y_AXIS_MOTOR_ENABLE, // Not needed -- can rework this design when time permits
     },
 };
 
@@ -68,14 +65,12 @@ static volatile App_BridgeData BridgeData[NUM_APP_BRIDGE] =
         .timer = X_AXIS_PWM_TIMER,
         .state = BRIDGE_OFF,
         .dutyCycle = 0.0F,
-        .enablePin = X_AXIS_MOTOR_ENABLE,
     },
     [Y_AXIS_BRIDGE] =
     {
         .timer = Y_AXIS_PWM_TIMER,
         .state = BRIDGE_OFF,
         .dutyCycle = 0.0F,
-        .enablePin = Y_AXIS_MOTOR_ENABLE, // Not needed -- can rework this design when time permits
     },
 };
 
@@ -145,18 +140,12 @@ static volatile void setBridge(App_BridgeData bridgeHandle)
     switch (bridgeHandle.state)
     {
         case BRIDGE_OFF:
-            // Motor connected to High impeadance
-            DeviceGpio_disable(bridgeHandle.enablePin);
-
             // Ignore provided Duty
             DeviceTimer_setPwmDutyCycle(bridgeHandle.timer, PWM_CHANNEL_A, 0.0F);
             DeviceTimer_setPwmDutyCycle(bridgeHandle.timer, PWM_CHANNEL_B, 0.0F);
             break;
 
         case BRIDGE_STOP:
-            // Motor Shorted to ground
-            DeviceGpio_enable(bridgeHandle.enablePin);
-
             // Ignore provided Duty
             DeviceTimer_setPwmDutyCycle(bridgeHandle.timer, PWM_CHANNEL_A, 0.0F);
             DeviceTimer_setPwmDutyCycle(bridgeHandle.timer, PWM_CHANNEL_B, 0.0F);
@@ -164,20 +153,19 @@ static volatile void setBridge(App_BridgeData bridgeHandle)
 
         case BRIDGE_FORWARD:
             // Motor Channel A set High Channel B ground
-            DeviceGpio_enable(bridgeHandle.enablePin);
             DeviceTimer_setPwmDutyCycle(bridgeHandle.timer, PWM_CHANNEL_A, bridgeHandle.dutyCycle);
             DeviceTimer_setPwmDutyCycle(bridgeHandle.timer, PWM_CHANNEL_B, 0.0F);
             break;
 
         case BRIDGE_REVERSE:
             // Motor Channel A set High Channel B ground
-            DeviceGpio_enable(bridgeHandle.enablePin);
             DeviceTimer_setPwmDutyCycle(bridgeHandle.timer, PWM_CHANNEL_A, 0.0F);
             DeviceTimer_setPwmDutyCycle(bridgeHandle.timer, PWM_CHANNEL_B, bridgeHandle.dutyCycle);
             break;
 
         default:
             // Bridge off for invalid inputs
-            DeviceGpio_disable(bridgeHandle.enablePin);
+            DeviceTimer_setPwmDutyCycle(bridgeHandle.timer, PWM_CHANNEL_A, 0.0F);
+            DeviceTimer_setPwmDutyCycle(bridgeHandle.timer, PWM_CHANNEL_B, 0.0F);
     }
 }
