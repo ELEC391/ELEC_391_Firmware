@@ -1,16 +1,17 @@
 /**
- * @file device_irq.h
- * @brief All functions relating to interrupts
+ * @file app_image.h
+ * @brief Plots Image
  */
 
-#ifndef DEVICE_IRQ_H_
-#define DEVICE_IRQ_H_
+#ifndef APP_IMAGE_H_
+#define APP_IMAGE_H_
 
 /******************************************************************************/
 /*                              I N C L U D E S                               */
 /******************************************************************************/
 
-#include "device_irq.h"
+#include "app_image.h"
+#include "main.h"
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -21,8 +22,13 @@
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
 /******************************************************************************/
-
-// Public typedefs that may be used by other files
+typedef enum AppImage_Num
+{
+    UPPER_TRIANGLE = 0U,
+    SQUARE,
+    NO_IMAGE_TO_PRINT,
+    NUM_APP_IMAGES
+} AppImage_Num;
 
 /******************************************************************************/
 /*                       G L O B A L  V A R I A B L E S                       */
@@ -34,24 +40,21 @@
 /******************************************************************************/
 /*                             F U N C T I O N S                              */
 /******************************************************************************/
-volatile uint32_t DeviceIrq_getCount_ms(void);
-void DeviceIrq_clearCounter(void);
-volatile bool DeviceIrq_getHomingDone(void);
-volatile bool DeviceIrq_getStopAndZero(void);
 
-// Interrupt Handlers
-void TIM2_IRQHandler(void);
-void TIM3_IRQHandler(void);
+void AppImage_4Hz(void);
+void AppImage_init(void);
 
-// TODO: Determine if autogen functions are required
-void NMI_Handler(void);
-void HardFault_Handler(void);
-void MemManage_Handler(void);
-void BusFault_Handler(void);
-void UsageFault_Handler(void);
-void SVC_Handler(void);
-void DebugMon_Handler(void);
-void PendSV_Handler(void);
-void SysTick_Handler(void);
+void AppImage_setImage(AppImage_Num image);
+uint32_t AppImage_getImageIndex(void);
+float_t AppImage_getXThetaRequest(void);
+float_t AppImage_getXPosition(void);
+float_t AppImage_getYThetaRequest(void);
+float_t AppImage_getYPosition(void);
 
-#endif // DEVICE_IRQ_H_
+/******************************************************************************/
+/*                       I N L I N E  F U N C T I O N S                       */
+/******************************************************************************/
+
+// Inline function declarations and implementations
+
+#endif // APP_IMAGE_H_

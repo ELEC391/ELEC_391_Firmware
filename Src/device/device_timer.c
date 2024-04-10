@@ -145,8 +145,8 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
                 .OCIdleState = TIM_OCIDLESTATE_RESET,
                 .OCNIdleState = TIM_OCNIDLESTATE_RESET
             },
-            .channelA = TIM_CHANNEL_1,
-            .channelB = TIM_CHANNEL_2,
+            .channelA = TIM_CHANNEL_2,
+            .channelB = TIM_CHANNEL_1,
         },
     },
     [Y_AXIS_PWM_TIMER] =
@@ -181,8 +181,8 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
                 .OCPolarity = TIM_OCPOLARITY_HIGH,
                 .OCFastMode = TIM_OCFAST_DISABLE,
             },
-            .channelA = TIM_CHANNEL_1,
-            .channelB = TIM_CHANNEL_2,
+            .channelA = TIM_CHANNEL_2,
+            .channelB = TIM_CHANNEL_1,
         },
     }
 };

@@ -34,6 +34,7 @@ BUILD_DIR = ../build
 ######################################
 # C sources
 C_SOURCES =  \
+../Src/app/app_image.c\
 ../Src/app/app_motor_control.c \
 ../Src/app/app_bridge.c \
 ../Src/app/app_motor.c \
