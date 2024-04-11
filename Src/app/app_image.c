@@ -18,6 +18,7 @@
 
 #define MAX_Y -15.0F
 #define MAX_X -15.0F
+#define NUM_POINTS_INTERPOLATE 2.0F
 
 // Image Defines
 #define UPPER_TRIANGLE_POINTS 3
@@ -39,9 +40,20 @@ typedef struct{
     float_t yPos;
     float_t yThetaReq;
     uint32_t imageIndex;
+    uint32_t imageNextIndex;
     AppImage_Num activeImage;
 }App_ImagePlaneData;
 
+typedef struct{
+    float_t nextX;
+    float_t nextY;
+    float_t stepX;
+    float_t stepY;
+    float_t maxY;
+    float_t maxX;
+    bool xDone;
+    bool yDone;
+}App_ImageInterpolate;
 
 /******************************************************************************/
 /*            P R I V A T E  F U N C T I O N  P R O T O T Y P E S             */
@@ -90,12 +102,13 @@ static App_ImagePlaneData PlaneData =
 {
     .activeImage = NO_IMAGE_TO_PRINT,
     .imageIndex = 0U,
+    .imageNextIndex = 0U,
     .xPos = 0.0F,
     .xThetaReq = 0.0F,
     .yPos = 0.0F,
     .yThetaReq = 0.0F
 };
-
+App_ImageInterpolate InterpolateData = {0};
 
 /******************************************************************************/
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
@@ -112,11 +125,47 @@ void AppImage_init(void)
     // Just Set Active Image to triangle -- ensure image index is zeroed
     PlaneData.activeImage = SQUARE;
     PlaneData.imageIndex = 0U;
+    if (ImageData[PlaneData.activeImage].numDataPoints >= 2U)
+    {
+        PlaneData.imageNextIndex = 1U;
+        PlaneData.xPos = ImageData[PlaneData.activeImage].xData[PlaneData.imageIndex];
+        PlaneData.yPos = ImageData[PlaneData.activeImage].yData[PlaneData.imageIndex];
 
-    AppMotorControl_configureController(Y_AXIS_CONTROLLER, true);
-    AppMotorControl_configureController(X_AXIS_CONTROLLER, true);
+        InterpolateData.maxX = ImageData[PlaneData.activeImage].xData[PlaneData.imageNextIndex];
+        InterpolateData.maxY = ImageData[PlaneData.activeImage].yData[PlaneData.imageNextIndex];
+
+
+        InterpolateData.stepX =  (ImageData[PlaneData.activeImage].xData[PlaneData.imageNextIndex] - ImageData[PlaneData.activeImage].xData[PlaneData.imageIndex]) / NUM_POINTS_INTERPOLATE;
+        InterpolateData.nextX = PlaneData.xPos + InterpolateData.stepX;
+
+
+        InterpolateData.stepY =  (ImageData[PlaneData.activeImage].yData[PlaneData.imageNextIndex] - ImageData[PlaneData.activeImage].yData[PlaneData.imageIndex]) / NUM_POINTS_INTERPOLATE;
+        InterpolateData.nextY = PlaneData.yPos + InterpolateData.stepY;
+
+        InterpolateData.xDone = false;
+        InterpolateData.yDone = false;
+
+
+        if (InterpolateData.stepX == 0.0F)
+        {
+            InterpolateData.xDone = true;
+        }
+
+        if (InterpolateData.stepY == 0.0F)
+        {
+            InterpolateData.xDone = true;
+        }
+
+        AppMotorControl_configureController(Y_AXIS_CONTROLLER, true);
+        AppMotorControl_configureController(X_AXIS_CONTROLLER, true);
+    }
+    else
+    {
+        // ERROR Image has less than two data points
+        PlaneData.activeImage = NO_IMAGE_TO_PRINT;
+    }
+
 }
-
 
 void AppImage_4Hz(void)
 {
@@ -188,20 +237,111 @@ float_t AppImage_getYThetaRequest(void)
 
 static void requestNewSetpoint(uint32_t index, AppImage_Num image)
 {
-    float_t yTheta, xTheta, yPos, xPos;
+    float_t yTheta, xTheta;
 
-    xPos = ImageData[image].xData[index];
-    yPos = ImageData[image].yData[index];
-
-    yTheta = (MAX_Y / 2.0F) * (1 - yPos);
-    xTheta = (MAX_X / 2.0F) * (1 + xPos);
+    yTheta = (MAX_Y / 2.0F) * (1 - PlaneData.yPos);
+    xTheta = (MAX_X / 2.0F) * (1 + PlaneData.xPos);
 
     AppMotorControl_requestSetPoint(Y_AXIS_CONTROLLER, yTheta);
     AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, xTheta);
 
     // update Plane Data Struct
-    PlaneData.xPos = xPos;
     PlaneData.xThetaReq = xTheta;
-    PlaneData.yPos = yPos;
     PlaneData.yThetaReq = yTheta;
+
+    // Update Y Data
+    if (InterpolateData.maxY >= 0.0F)
+    {
+        if (InterpolateData.nextY > InterpolateData.maxY)
+        {
+            InterpolateData.yDone = true;
+        }
+        else
+        {
+            PlaneData.yPos = InterpolateData.nextY;
+            InterpolateData.nextY = PlaneData.yPos + InterpolateData.stepY;
+        }
+    }
+    else
+    {
+        if (InterpolateData.nextY < InterpolateData.maxY)
+        {
+            InterpolateData.yDone = true;
+        }
+        else
+        {
+            PlaneData.yPos = InterpolateData.nextY;
+            InterpolateData.nextY = PlaneData.yPos + InterpolateData.stepY;
+        }
+    }
+
+    // Update X Data
+    if (InterpolateData.maxX >= 0.0F)
+    {
+        if (InterpolateData.nextX > InterpolateData.maxX)
+        {
+            InterpolateData.xDone = true;
+        }
+        else
+        {
+            PlaneData.xPos = InterpolateData.nextX;
+            InterpolateData.nextX = PlaneData.xPos + InterpolateData.stepX;
+        }
+    }
+    else
+    {
+        if (InterpolateData.nextX < InterpolateData.maxX)
+        {
+            InterpolateData.xDone = true;
+        }
+        else
+        {
+            PlaneData.xPos = InterpolateData.nextX;
+            InterpolateData.nextX = PlaneData.xPos + InterpolateData.stepX;
+        }
+    }
+
+
+    if (InterpolateData.xDone && InterpolateData.yDone)
+    {
+        // Update Indicies
+        if (PlaneData.imageNextIndex == (ImageData[PlaneData.activeImage].numDataPoints - 1))
+        {
+            PlaneData.imageIndex = PlaneData.imageNextIndex;
+            PlaneData.imageNextIndex = 0U;
+        }
+        else
+        {
+            PlaneData.imageIndex = PlaneData.imageNextIndex;
+            PlaneData.imageNextIndex = 0U;
+        }
+
+        PlaneData.xPos = ImageData[PlaneData.activeImage].xData[PlaneData.imageIndex];
+        PlaneData.yPos = ImageData[PlaneData.activeImage].yData[PlaneData.imageIndex];
+
+        InterpolateData.maxX = ImageData[PlaneData.activeImage].xData[PlaneData.imageNextIndex];
+        InterpolateData.maxY = ImageData[PlaneData.activeImage].yData[PlaneData.imageNextIndex];
+
+
+        InterpolateData.stepX =  (ImageData[PlaneData.activeImage].xData[PlaneData.imageNextIndex] - ImageData[PlaneData.activeImage].xData[PlaneData.imageIndex]) / NUM_POINTS_INTERPOLATE;
+        InterpolateData.nextX = PlaneData.xPos + InterpolateData.stepX;
+
+
+        InterpolateData.stepY =  (ImageData[PlaneData.activeImage].yData[PlaneData.imageNextIndex] - ImageData[PlaneData.activeImage].yData[PlaneData.imageIndex]) / NUM_POINTS_INTERPOLATE;
+        InterpolateData.nextY = PlaneData.yPos + InterpolateData.stepY;
+
+        InterpolateData.xDone = false;
+        InterpolateData.yDone = false;
+
+
+        if (InterpolateData.stepX == 0.0F)
+        {
+            InterpolateData.xDone = true;
+        }
+
+        if (InterpolateData.stepY == 0.0F)
+        {
+            InterpolateData.xDone = true;
+        }
+    }
 }

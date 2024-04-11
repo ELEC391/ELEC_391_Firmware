@@ -124,7 +124,7 @@ int main(void)
         else
         {
             stopAndZero = DeviceIrq_getStopAndZero();
-            HAL_Delay(150);
+            HAL_Delay(1000);
             AppImage_4Hz();
 
             yPos = AppImage_getYPosition();
