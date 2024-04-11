@@ -8,6 +8,7 @@
 /******************************************************************************/
 
 #include "main.h"
+#include "app/app_image.h"
 #include "device_timer.h"
 #include "device_irq.h"
 #include "device_config.h"
@@ -66,11 +67,11 @@ int main(void)
     // Configure hardware
     DeviceConfig_init();
 
-
     // Test and Debug params
     float_t velocity, position, filtVel, filtPos;
-    float_t yTheta, xTheta, yPos, xPos;
-    uint32_t imageIndex,timer;
+    // float_t yTheta, xTheta, yPos, xPos;
+    AppImage_Num shape = SQUARE;
+    uint32_t timer, count;
     char aTxMessage[100];
     bool homingComplete = false;
     bool stopAndZero = false;
@@ -78,13 +79,13 @@ int main(void)
     AppMotorControl_configureController(Y_AXIS_CONTROLLER, false);
     AppMotorControl_configureController(X_AXIS_CONTROLLER, false);
     DeviceGpio_enable(LASER_ENABLE_PIN);
-
+    count = 0;
     while (!homingComplete)
     {
         HAL_Delay(1000);
-        sprintf(aTxMessage, "HOMING IN PROGRESS\r\n");
+        sprintf(aTxMessage, "\r\n********************************** HOMING IN PROGRESS **********************************\r\n");
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-        sprintf(aTxMessage, "********************************** X-AXIS **********************************\r\n");
+        sprintf(aTxMessage, " ************ X-AXIS ************\r\n");
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
         timer = DeviceIrq_getCount_ms();
         velocity = AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
@@ -93,7 +94,7 @@ int main(void)
         filtPos =  AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
         sprintf(aTxMessage, "%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)timer);
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-        sprintf(aTxMessage, "********************************** Y-AXIS **********************************\r\n");
+        sprintf(aTxMessage, " ************ Y-AXIS ************ \r\n");
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
         timer = DeviceIrq_getCount_ms();
         velocity = AppMotor_getVelocity_Raw(Y_AXIS_ENCODER);
@@ -106,6 +107,7 @@ int main(void)
     }
 
     AppImage_init();
+    AppImage_setImage(shape);
     DeviceGpio_enable(LASER_ENABLE_PIN);
 
 
@@ -123,34 +125,51 @@ int main(void)
         }
         else
         {
-            stopAndZero = DeviceIrq_getStopAndZero();
-            HAL_Delay(150);
+            HAL_Delay(40);
             AppImage_4Hz();
 
-            yPos = AppImage_getYPosition();
-            yTheta = AppImage_getYThetaRequest();
-            xPos = AppImage_getXPosition();
-            xTheta = AppImage_getXThetaRequest();
-            imageIndex = AppImage_getImageIndex();
-
-            sprintf(aTxMessage, "*************************************** \r\n");
-            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-
-            sprintf(aTxMessage, "Image Index = %d \r\n", (int) imageIndex);
-            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-
-            sprintf(aTxMessage, "X Position  = %d \r\n", (int) xPos);
-            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-
-            sprintf(aTxMessage, "X Theta     = %d \r\n", (int) xTheta);
-            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-
-            sprintf(aTxMessage, "Y Position  = %d \r\n", (int) yPos);
-            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-
-            sprintf(aTxMessage, "Y Theta     = %d \r\n", (int) yTheta);
-            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
         }
+        count++;
+
+        if (count >= 50U)
+        {
+            if (shape == BATMAN)
+            {
+                stopAndZero = true;
+            }
+            else
+            {
+                shape++;
+            }
+            count = 0;
+            AppImage_setImage(shape);
+            if (shape == SQUARE)
+            {
+                sprintf(aTxMessage, "************ SQUARE ************\r\n");
+                DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+            }
+            else if (shape == UPPER_TRIANGLE)
+            {
+                sprintf(aTxMessage, "************ TRIANGLE ************\r\n");
+                DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+            }
+            else if (shape == OCTAGON)
+            {
+                sprintf(aTxMessage, "************ OCTAGON ************\r\n");
+                DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+            }
+            else if (shape == STAR)
+            {
+                sprintf(aTxMessage, "************ STAR ************\r\n");
+                DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+            }
+            else if (shape == BATMAN)
+            {
+                sprintf(aTxMessage, "************ BATMAN LOGO ************\r\n");
+                DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+            }
+        }
+
     }
 }
 

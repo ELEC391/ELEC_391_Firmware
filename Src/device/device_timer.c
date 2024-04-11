@@ -67,7 +67,7 @@ static TimerConfig TimerConfigs[NUM_DEVICE_TIMERS] =
         .timConfig =
         {
             .Instance = TIM2,
-            .Init.Prescaler = 999, // CLK / ((PRE +1)(Period + 1)) = 1/Timer Freq  => 1Khz
+            .Init.Prescaler = 199, // CLK / ((PRE +1)(Period + 1)) = 1/Timer Freq  => 1Khz
             .Init.CounterMode = TIM_COUNTERMODE_UP,
             .Init.Period = TIMER_CLOCK_SPEED_MHZ - 1,
             .Init.ClockDivision = TIM_CLOCKDIVISION_DIV1,

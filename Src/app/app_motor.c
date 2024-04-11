@@ -22,7 +22,7 @@
 
 // Filter Defines
 #define SAMPLE_FREQ_HZ 10000
-#define CUTOFF_HZ 150
+#define CUTOFF_HZ 600
 #define SEC_PER_MIN 60
 
 /******************************************************************************/

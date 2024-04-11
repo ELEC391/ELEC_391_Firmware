@@ -19,11 +19,16 @@
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-#define CONTROLLER_FREQUENCY 1000.0F // Currently running in 1Khz ISR
+#define CONTROLLER_FREQUENCY 5000.0F // Currently running in 1Khz ISR
 
 // Controller Gains
-#define KP 1.0F
-#define KI 0.5F
+#define KP_X 45.0F
+#define KI_X 2.5F
+#define KD_X 5.0F
+
+#define KP_Y 45.0F
+#define KI_Y 2.5F
+#define KD_Y 5.5F
 
 // Controller Limits
 #define MAX_DUTY_OUTPUT 100.0F
@@ -59,8 +64,9 @@ static App_MotorControllerData ControllerData[NUM_APP_CONTROLLER] =
     {
         .controller =
         {
-            .Kp = KP,
-            .Ki = KI,
+            .Kp = KP_X,
+            .Ki = KI_X,
+            .Kd = KD_X,
             .limMax = MAX_DUTY_OUTPUT,
             .limMin = MIN_DUTY_OUTPUT,
             .limMaxInt = MAX_INTEGRATOR_LIMIT,
@@ -68,6 +74,7 @@ static App_MotorControllerData ControllerData[NUM_APP_CONTROLLER] =
             .T = (1.0F / CONTROLLER_FREQUENCY),
             .integrator = 0.0F,
             .prevError = 0.0F,
+            .Derivative = 0.0F,
             .out = 0.0F
         },
         .bridge = X_AXIS_BRIDGE,
@@ -79,8 +86,9 @@ static App_MotorControllerData ControllerData[NUM_APP_CONTROLLER] =
     {
         .controller =
         {
-            .Kp = KP,
-            .Ki = KI,
+            .Kp = KP_Y,
+            .Ki = KI_Y,
+            .Kd = KD_Y,
             .limMax = MAX_DUTY_OUTPUT,
             .limMin = MIN_DUTY_OUTPUT,
             .limMaxInt = MAX_INTEGRATOR_LIMIT,
@@ -88,6 +96,7 @@ static App_MotorControllerData ControllerData[NUM_APP_CONTROLLER] =
             .T = (1.0F / CONTROLLER_FREQUENCY),
             .integrator = 0.0F,
             .prevError = 0.0F,
+            .Derivative = 0.0F,
             .out = 0.0F
         },
         .bridge = Y_AXIS_BRIDGE,
@@ -122,6 +131,8 @@ void AppMotorControl_1kHz(void)
         if (ControllerData[i].controllerEnabled)
         {
             float_t currPos = AppMotor_getPosition_10kHz(ControllerData[i].encoder);
+            float_t currVel = AppMotor_getVelocity_10kHz(ControllerData[i].encoder);
+            ControllerData[i].controller.Derivative = currVel;
             float_t setPoint = ControllerData[i].requestedSetPoint;
             Lib_PI_updateController(&ControllerData[i].controller, setPoint, currPos);
             sendBridgeRequest(ControllerData[i].controller.out, ControllerData[i].bridge);
