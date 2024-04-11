@@ -15,6 +15,7 @@
 #include "app_motor.h"
 #include "app_bridge.h"
 #include "app_motor_control.h"
+#include <stdbool.h>
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
@@ -39,6 +40,8 @@ static void pushButtonHomingCallback(void);
 /******************************************************************************/
 
 static volatile uint32_t counter_ms = 0U;
+static volatile bool homingDone = false;
+static volatile bool stopAndZero = false;
 
 /******************************************************************************/
 /*                P U B L I C  G L O B A L  V A R I A B L E S                 */
@@ -57,6 +60,16 @@ void DeviceIrq_clearCounter(void)
 {
     counter_ms = 0U;
 }
+
+volatile bool DeviceIrq_getHomingDone(void)
+{
+    return homingDone;
+}
+
+volatile bool DeviceIrq_getStopAndZero(void)
+{
+    return stopAndZero;
+}
 /******************************************************************************/
 /* STM32H5xx Peripheral Interrupt Handlers                                    */
 /* Add here the Interrupt Handlers for the used peripherals.                  */
@@ -74,7 +87,7 @@ void TIM3_IRQHandler(void)
     if (count >= 10000U)
     {
         count = 0;
-        // DeviceGpio_toggle(TEST_LED_B_PIN);
+        DeviceGpio_toggle(TEST_LED_B_PIN);
     }
     count++;
 
@@ -92,7 +105,7 @@ void TIM2_IRQHandler(void)
     if (count >= 500U)
     {
         count = 0;
-        // DeviceGpio_toggle(TEST_LED_A_PIN);
+        DeviceGpio_toggle(TEST_LED_A_PIN);
     }
     count++;
     counter_ms++;
@@ -113,14 +126,18 @@ void EXTI15_10_IRQHandler(void)
 
 static void pushButtonHomingCallback(void)
 {
-    AppMotor_reinitializeData();
-    // static bool homingComplete = false;
+    static bool flg = false;
+    if (flg)
+    {
+        stopAndZero = true;
+    }
 
-    // if (!homingComplete)
-    // {
-    //     homingComplete = true;
-    //     AppMotor_reinitializeData();
-    // }
+    if (!homingDone)
+    {
+        homingDone = true;
+        flg = true;
+        AppMotor_reinitializeData();
+    }
 }
 
 /******************************************************************************/

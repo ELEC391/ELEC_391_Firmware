@@ -56,7 +56,7 @@ void DeviceConfig_init(void)
 {
     // Initial Hardware and clock setup
     MPU_Config();
-    // enableCache();
+    enableCache();
     HAL_Init();
     SystemClock_Config();
 

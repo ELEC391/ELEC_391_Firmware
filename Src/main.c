@@ -16,15 +16,14 @@
 #include "app_motor.h"
 #include "app_bridge.h"
 #include "app_motor_control.h"
+#include "app_image.h"
+#include <math.h>
 #include <stdbool.h>
-#include <stdint.h>
 
 /******************************************************************************/
 /*                               D E F I N E S                                */
 /******************************************************************************/
 
-#define MAX_KP 16.0F
-#define KP_INCREMENT 0.5F
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -69,53 +68,23 @@ int main(void)
 
 
     // Test and Debug params
-    float_t velocity = 0;
-    float_t position = 0;
-    float_t filtVel = 0;
-    float_t filtPos = 0;
-    uint32_t timer = 0U;
-    uint32_t count = 0U;
-    bool dir = false;
-
+    float_t velocity, position, filtVel, filtPos;
+    float_t yTheta, xTheta, yPos, xPos;
+    uint32_t imageIndex,timer;
     char aTxMessage[100];
+    bool homingComplete = false;
+    bool stopAndZero = false;
 
     AppMotorControl_configureController(Y_AXIS_CONTROLLER, false);
     AppMotorControl_configureController(X_AXIS_CONTROLLER, false);
+    DeviceGpio_enable(LASER_ENABLE_PIN);
 
-
-    sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position,timerCount\r\n");
-    DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-
-
-    // Main loop
-    while (1)
+    while (!homingComplete)
     {
-        HAL_Delay(2000);
-        DeviceGpio_toggle(TEST_LED_A_PIN);
-        DeviceGpio_toggle(LASER_ENABLE_PIN);
-
-
-        if (count >= 10)
-        {
-            DeviceGpio_toggle(TEST_LED_B_PIN);
-
-
-
-            if (dir)
-            {
-                AppBridge_setBridge(X_AXIS_BRIDGE, BRIDGE_FORWARD, 50.0);
-                AppBridge_setBridge(Y_AXIS_BRIDGE, BRIDGE_FORWARD, 50.0);
-            }
-            else
-            {
-                AppBridge_setBridge(X_AXIS_BRIDGE, BRIDGE_REVERSE, 50.0);
-                AppBridge_setBridge(Y_AXIS_BRIDGE, BRIDGE_REVERSE, 50.0);
-            }
-            count = 0;
-            dir = !dir;
-        }
-
-        sprintf(aTxMessage, "**************************** X AXIS ****************************\r\n");
+        HAL_Delay(1000);
+        sprintf(aTxMessage, "HOMING IN PROGRESS\r\n");
+        DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        sprintf(aTxMessage, "********************************** X-AXIS **********************************\r\n");
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
         timer = DeviceIrq_getCount_ms();
         velocity = AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
@@ -124,8 +93,7 @@ int main(void)
         filtPos =  AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
         sprintf(aTxMessage, "%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)timer);
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
-
-        sprintf(aTxMessage, "**************************** Y AXIS ****************************\r\n");
+        sprintf(aTxMessage, "********************************** Y-AXIS **********************************\r\n");
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
         timer = DeviceIrq_getCount_ms();
         velocity = AppMotor_getVelocity_Raw(Y_AXIS_ENCODER);
@@ -134,13 +102,84 @@ int main(void)
         filtPos =  AppMotor_getPosition_10kHz(Y_AXIS_ENCODER);
         sprintf(aTxMessage, "%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)timer);
         DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        homingComplete = DeviceIrq_getHomingDone();
+    }
 
-        count++;
+    AppImage_init();
+    DeviceGpio_enable(LASER_ENABLE_PIN);
+
+
+    // Main loop
+    while (1)
+    {
+        if (stopAndZero)
+        {
+            HAL_Delay(1000);
+            AppMotorControl_requestSetPoint(Y_AXIS_CONTROLLER, 0.0F);
+            AppMotorControl_requestSetPoint(X_AXIS_CONTROLLER, 0.0F);
+
+            sprintf(aTxMessage, "DONE -- POSITION ZEROED -- RESTART MCU \r\n");
+            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        }
+        else
+        {
+            stopAndZero = DeviceIrq_getStopAndZero();
+            HAL_Delay(150);
+            AppImage_4Hz();
+
+            yPos = AppImage_getYPosition();
+            yTheta = AppImage_getYThetaRequest();
+            xPos = AppImage_getXPosition();
+            xTheta = AppImage_getXThetaRequest();
+            imageIndex = AppImage_getImageIndex();
+
+            sprintf(aTxMessage, "*************************************** \r\n");
+            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+
+            sprintf(aTxMessage, "Image Index = %d \r\n", (int) imageIndex);
+            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+
+            sprintf(aTxMessage, "X Position  = %d \r\n", (int) xPos);
+            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+
+            sprintf(aTxMessage, "X Theta     = %d \r\n", (int) xTheta);
+            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+
+            sprintf(aTxMessage, "Y Position  = %d \r\n", (int) yPos);
+            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+
+            sprintf(aTxMessage, "Y Theta     = %d \r\n", (int) yTheta);
+            DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+        }
     }
 }
 
 
 // TODO Use logic below for tuning mode
+
+
+    // sprintf(aTxMessage, "Raw_Velocity,Filtered_Velocity,Raw_Postiion,Filtered_Position,timerCount\r\n");
+    // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+
+            // sprintf(aTxMessage, "********************************** X-AXIS **********************************\r\n");
+            // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+            // timer = DeviceIrq_getCount_ms();
+            // velocity = AppMotor_getVelocity_Raw(X_AXIS_ENCODER);
+            // position = AppMotor_getPosition_Raw(X_AXIS_ENCODER);
+            // filtVel =  AppMotor_getVelocity_10kHz(X_AXIS_ENCODER);
+            // filtPos =  AppMotor_getPosition_10kHz(X_AXIS_ENCODER);
+            // sprintf(aTxMessage, "%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)timer);
+            // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+
+            // sprintf(aTxMessage, "********************************** Y-AXIS **********************************\r\n");
+            // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
+            // timer = DeviceIrq_getCount_ms();
+            // velocity = AppMotor_getVelocity_Raw(Y_AXIS_ENCODER);
+            // position = AppMotor_getPosition_Raw(Y_AXIS_ENCODER);
+            // filtVel =  AppMotor_getVelocity_10kHz(Y_AXIS_ENCODER);
+            // filtPos =  AppMotor_getPosition_10kHz(Y_AXIS_ENCODER);
+            // sprintf(aTxMessage, "%d,%d,%d,%d,%d\r\n", (int) velocity, (int) filtVel,(int) position, (int) filtPos,(int)timer);
+            // DeviceUart_sendMessage(MAIN_LOGGING_CHANNEL, aTxMessage);
 
 /*
 
