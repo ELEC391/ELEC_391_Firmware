@@ -22,6 +22,9 @@
 // Image Defines
 #define UPPER_TRIANGLE_POINTS 3
 #define SQUARE_POINTS 4
+#define BATMAN_POINTS 12
+#define OCTAGON_POINTS 8
+#define STAR_POINTS 5
 
 /******************************************************************************/
 /*                              T Y P E D E F S                               */
@@ -61,21 +64,48 @@ static float_t UpperTriagleY[UPPER_TRIANGLE_POINTS] = {1.0F, 1.0F, -1.0};
 static float_t SquareX[SQUARE_POINTS] = {-1.0F, 1.0F, 1.0F, -1.0F};
 static float_t SquareY[SQUARE_POINTS] = {1.0F, 1.0F, -1.0F, -1.0F};
 
+static float_t OctagonX[OCTAGON_POINTS] = {0.3F, -0.3F, -0.8F, -0.8F, -0.3F, 0.3F, 0.8F, 0.8F};
+static float_t OctagonY[OCTAGON_POINTS] = {1.0F, 1.0F, 0.5F, 0.0F, -0.5F, -0.5F, 0.0F, 0.5F};
+
+static float_t StarX[STAR_POINTS] = {-1.0F, 1.0F, -0.7F, 0.0F, 0.7F};
+static float_t StarY[STAR_POINTS] = {0.3F, 0.3F, -1.0F, 1.0F, -1.0F};
+
+static float_t BatmanX[BATMAN_POINTS] = {0.0F, 0.130F, 0.2F, 1.0F, 0.8F, 0.27F, 0.0F, -0.27F, -0.8F, -1.0F, -0.2F, -0.13F};
+static float_t BatmanY[BATMAN_POINTS] = {0.33F, 0.53F, -0.2F, 0.33F, -0.13F, -0.13F, -0.67F, -0.13F, -0.13F, 0.33F, 0.2F, 0.53F};
+
 
 // App Data
 static App_ImageData ImageData[NUM_APP_IMAGES] =
 {
+    [SQUARE] =
+    {
+        .xData = SquareX,
+        .yData = SquareY,
+        .numDataPoints = SQUARE_POINTS,
+    },
     [UPPER_TRIANGLE] =
     {
         .xData = UpperTriagleX,
         .yData = UpperTriagleY,
         .numDataPoints = UPPER_TRIANGLE_POINTS,
     },
-    [SQUARE] =
+    [OCTAGON] =
     {
-        .xData = SquareX,
-        .yData = SquareY,
-        .numDataPoints = SQUARE_POINTS,
+        .xData = OctagonX,
+        .yData = OctagonY,
+        .numDataPoints = OCTAGON_POINTS,
+    },
+    [STAR] =
+    {
+        .xData = StarX,
+        .yData = StarY,
+        .numDataPoints = STAR_POINTS,
+    },
+    [BATMAN] =
+    {
+        .xData = BatmanX,
+        .yData = BatmanY,
+        .numDataPoints = BATMAN_POINTS,
     },
     [NO_IMAGE_TO_PRINT] =
     {
@@ -110,7 +140,7 @@ static App_ImagePlaneData PlaneData =
 void AppImage_init(void)
 {
     // Just Set Active Image to triangle -- ensure image index is zeroed
-    PlaneData.activeImage = SQUARE;
+    PlaneData.activeImage = STAR;
     PlaneData.imageIndex = 0U;
 
     AppMotorControl_configureController(Y_AXIS_CONTROLLER, true);

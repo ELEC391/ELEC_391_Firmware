@@ -46,6 +46,7 @@ void Lib_PI_init(Lib_PI_Controller* controller)
 	/* Clear controller variables */
     controller->integrator = 0.0f;
     controller->prevError  = 0.0f;
+    controller->Derivative = 0.0f;
     controller->out = 0.0f;
 }
 
@@ -68,7 +69,7 @@ float_t Lib_PI_updateController(Lib_PI_Controller* controller, float_t setPoint,
     }
 
     // Output clamping
-    controller->out = proportional + controller->integrator;
+    controller->out = proportional + controller->integrator - controller->Kd * controller->Derivative;
 
     if (controller->out > controller->limMax) {
 

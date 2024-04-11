@@ -24,8 +24,11 @@
 /******************************************************************************/
 typedef enum AppImage_Num
 {
-    UPPER_TRIANGLE = 0U,
-    SQUARE,
+    SQUARE = 0U,
+    UPPER_TRIANGLE,
+    OCTAGON,
+    STAR,
+    BATMAN,
     NO_IMAGE_TO_PRINT,
     NUM_APP_IMAGES
 } AppImage_Num;

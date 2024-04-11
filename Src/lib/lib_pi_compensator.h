@@ -28,6 +28,7 @@ typedef struct
 	// Controller gains
 	float_t Kp;
 	float_t Ki;
+    float_t Kd;
 
 	// Output limits
 	float_t limMin;
@@ -43,6 +44,9 @@ typedef struct
 	// Controller memory
 	float_t integrator;
 	float_t prevError; // Required for integrator
+
+    // Dt
+    float_t Derivative;
 
 	//Controller output
 	float_t out;
