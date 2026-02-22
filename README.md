@@ -36,12 +36,17 @@ The Firmware in the source folder can be broken down into three distinct section
 
 ## Controller Performance
 
-Position Controller Step Response
+### Position Controller Step Response
 
 <img width="695" height="455" alt="Screenshot 2026-02-21 at 20 38 43" src="https://github.com/user-attachments/assets/921fd394-fbb2-4470-8892-1ab61cf06eb1" />
 
-Filtering Results
+### Filtering Results
+
+
+
 <img width="757" height="455" alt="Screenshot 2026-02-22 at 10 06 51" src="https://github.com/user-attachments/assets/67a7e64d-3d1e-493f-af52-b8a72d285f87" />
+
+
 
 <img width="490" height="386" alt="Screenshot 2026-02-21 at 20 39 47" src="https://github.com/user-attachments/assets/0289ddd0-ecbf-4b04-aaea-263ff0fef54b" />
 
